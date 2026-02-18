@@ -9,6 +9,10 @@ Classe 5BII
 Informatica
 -->
 
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 
 <html lang="it">
@@ -25,6 +29,11 @@ Informatica
 </head>
 
 <body>
+    <p>Ultime aggiunte</p>
+    <a href="ricerca.php" class="toggle-link">Ricerca</a>
+    <a href="profilo.php" class="toggle-link" target="_blank">Profilo</a>
+
+    <!---
     <div class="lava-bg">
         <div class="lava-blob"></div>
         <div class="lava-blob"></div>
@@ -64,6 +73,8 @@ Informatica
         <i> Credits: Refosco Enrico <br>
             enricoorefosco@gmail.com </i> <br>
     </footer>
+    --->
+
 </body>
 
 </html>
