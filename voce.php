@@ -31,9 +31,18 @@ if (!$voce) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dettaglio Voce: <?php echo htmlspecialchars($voce['nome']); ?></title>
+    <link rel="stylesheet" href="styles/stylee.css">
     <link rel="stylesheet" href="styles/vstyle.css">
 </head>
 <body>
+    
+    <img class="logo" src="media/greenmantis.png">
+    <header class="Nav">
+        <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
+        <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
+        <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>
+        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
+    </header>
     <a href="profilo.php" class="toggle-link" target="_blank">Profilo</a>
     <div class="container">
         <h1>Scheda Voce</h1>
@@ -67,7 +76,6 @@ if (!$voce) {
             <label>Data approvazione:</label>
             <span><?php echo htmlspecialchars($voce["data_approvazione"]); ?></span>
         </div>
-
     </div>
 </body>
 </html>

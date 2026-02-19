@@ -1,0 +1,131 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: sans-serif;
+    line-height: 1.6;
+    background-color: #3d3d3d; /* Se vuoi lo sfondo scuro come prima */
+}
+
+
+.Main {
+    flex: 1; /* Fondamentale: riempie lo spazio vuoto e spinge il footer giù */
+    margin-left: 5%; /* Sposta il contenuto a destra (regola la % come vuoi) */
+    margin-right: 5%;
+    padding: 60px 20px 40px 20px; /* 120px sopra serve per non finire sotto la Nav */
+    box-sizing: border-box;
+}
+
+/* Se hai lo sfondo scuro, rendi i testi leggibili nel Main */
+.Main h2, .Main p {
+    color: rgb(0, 0, 0);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #3d3d3d;
+}
+
+input {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Stile per il link */
+td a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+td a:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+
+/*  NAV fisso sopra tutto */
+.Nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    /* sopra il background animato */
+    display: flex;
+    background-color: black;
+    justify-content: center;
+    gap: 100px;
+    font-weight: bold;
+    padding: 20px 0;
+}
+
+.Nav a {
+    color: #11e4ff;
+    text-decoration: none;
+    border-radius: 30px;
+    padding: 8px 30px;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.Nav a::before {
+    content: "◆ ";
+    color: #11e4ff;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.Nav a:hover::before {
+    opacity: 1;
+}
+
+.Nav a:hover {
+    color: #11e4ff;
+    text-shadow: 0 0 15px #11e4ff, 0 0 30px #068ce6;
+}
+
+
+/*------------------------------------------------------------------*/
+
+footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 15px;
+    background-color: #222;
+    color: #fff;
+    font-size: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+footer p {
+    text-align: left;
+    margin: 0;
+}
+
+footer i {
+    color: #bbb;
+}

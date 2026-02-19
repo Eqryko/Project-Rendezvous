@@ -1,16 +1,10 @@
 <!--
-__________        _____                           ___________            .__              
-\______   \ _____/ ____\____  ______ ____  ____   \_   _____/ ___________|__| ____  ____  
- |       _// __ \   __\/  _ \/  ___// ___\/  _ \   |    __)_ /    \_  __ \  |/ ___\/  _ \ 
- |    |   \  ___/|  | (  <_> )___ \\  \__(  <_> )  |        \   |  \  | \/  \  \__(  <_> )
- |____|_  /\___  >__|  \____/____  >\___  >____/  /_______  /___|  /__|  |__|\___  >____/ 
-        \/     \/                \/     \/                \/     \/              \/       
 Classe 5BII
 Informatica
 -->
 
 <?php
-session_start();
+//session_start();
 ?>
 
 <!DOCTYPE html>
@@ -31,15 +25,6 @@ session_start();
 
 <body>
 
-
-
-    <div class="lava-bg">
-        <div class="lava-blob"></div>
-        <div class="lava-blob"></div>
-        <div class="lava-blob"></div>
-        <div class="lava-blob"></div>
-        <div class="lava-blob"></div>
-    </div>
     <img class="logo" src="media/greenmantis.png">
     <header class="Nav">
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
@@ -56,9 +41,6 @@ session_start();
             <p>Ultime aggiunte</p>
             <a href="ricerca.php" class="toggle-link">Ricerca</a><br>
             
-
-            
-
             <p>
                 <input type="submit" value="Invia" name="Invia">
                 <input type="reset" value="Cancella" name="Cancella">

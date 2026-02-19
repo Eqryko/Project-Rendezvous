@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $tab = "register";
         } else {
             // controllo duplicati
-            $stmt = $conn->prepare("SELECT id FROM utenti WHERE username = ? OR email = ?");
+            $stmt = $conn->prepare("SELECT id FROM utente WHERE username = ? OR email = ?");
             $stmt->execute([$username, $email]);
             if ($stmt->fetch()) {
                 $errore = "Username o email già registrati.";
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
 
-                $stmt = $conn->prepare("INSERT INTO utenti (username, email, password_hash) VALUES (?, ?, ?)");
+                $stmt = $conn->prepare("INSERT INTO utente (username, email, password_hash) VALUES (?, ?, ?)");
                 $stmt->execute([$username, $email, $hash]);
 
                 $successo = "Registrazione completata! Ora puoi fare login.";
