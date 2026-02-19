@@ -24,16 +24,15 @@ session_start();
     <link rel="icon"
         href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico">
-    <link rel="stylesheet" href="styles/style.css">
+    
+    <link rel="stylesheet" href="styles/stylee.css">
     <script src="scripts/script.js" defer></script>
 </head>
 
 <body>
-    <p>Ultime aggiunte</p>
-    <a href="ricerca.php" class="toggle-link">Ricerca</a>
-    <a href="profilo.php" class="toggle-link" target="_blank">Profilo</a>
 
-    <!---
+
+
     <div class="lava-bg">
         <div class="lava-blob"></div>
         <div class="lava-blob"></div>
@@ -43,9 +42,10 @@ session_start();
     </div>
     <img class="logo" src="media/greenmantis.png">
     <header class="Nav">
+        <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
         <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>
-        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> GitHub Project </a>
+        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
     <div class="Main">
         <h1> H1 </h1>
@@ -53,13 +53,11 @@ session_start();
         <form action="" method="post">
             <h2>H2</h2>
 
-            <p><b>Nominativo</b><br>
-            <input type="text" name="nome" maxlength="50" pattern="^[a-zA-Z ]+$" required></p>
+            <p>Ultime aggiunte</p>
+            <a href="ricerca.php" class="toggle-link">Ricerca</a><br>
+            
 
-            <p><b>Data/ora di prenotazione</b>
-                <input type="date" name="data" required>
-                <input type="time" name="tempo" required>
-            </p>
+            
 
             <p>
                 <input type="submit" value="Invia" name="Invia">
@@ -73,7 +71,7 @@ session_start();
         <i> Credits: Refosco Enrico <br>
             enricoorefosco@gmail.com </i> <br>
     </footer>
-    --->
+
 
 </body>
 

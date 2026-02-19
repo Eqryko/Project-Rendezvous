@@ -84,7 +84,7 @@ hr {
 }
 
 .Nav a {
-    color: #c4ff0e;
+    color: #11e4ff;
     text-decoration: none;
     border-radius: 30px;
     padding: 8px 30px;
@@ -94,7 +94,7 @@ hr {
 
 .Nav a::before {
     content: "◆ ";
-    color: #c4ff0e;
+    color: #11e4ff;
     opacity: 0;
     transition: opacity 0.4s ease;
 }
@@ -104,8 +104,8 @@ hr {
 }
 
 .Nav a:hover {
-    color: #c4ff0e;
-    text-shadow: 0 0 15px #c4ff0e, 0 0 30px #49e606;
+    color: #11e4ff;
+    text-shadow: 0 0 15px #11e4ff, 0 0 30px #068ce6;
 }
 
 .Main {
@@ -147,7 +147,7 @@ form {
 }
 
 form b {
-    color: #c4ff0e;
+    color: #11e4ff;
     font-size: 20px;
 }
 
@@ -210,7 +210,7 @@ input[type="radio"] {
 .lava-blob:nth-child(1) {
     width: 500px;
     height: 500px;
-    background: #91ff00;
+    background: #11e4ff;
     top: 10%;
     left: 10%;
     animation-delay: 0s;
@@ -219,7 +219,7 @@ input[type="radio"] {
 .lava-blob:nth-child(2) {
     width: 600px;
     height: 600px;
-    background: #aaff00;
+    background: #0095ff;
     top: 50%;
     left: 60%;
     animation-delay: 5s;
@@ -228,7 +228,7 @@ input[type="radio"] {
 .lava-blob:nth-child(3) {
     width: 400px;
     height: 400px;
-    background: #66ff33;
+    background: #0009ff;
     top: 70%;
     left: 30%;
     animation-delay: 10s;
@@ -237,7 +237,7 @@ input[type="radio"] {
 .lava-blob:nth-child(4) {
     width: 550px;
     height: 550px;
-    background: #09ff00;
+    background: #0066ff;
     top: 20%;
     left: 80%;
     animation-delay: 15s;
@@ -246,7 +246,7 @@ input[type="radio"] {
 .lava-blob:nth-child(5) {
     width: 450px;
     height: 450px;
-    background: #b6ff3f;
+    background: #3f3fff;
     top: 80%;
     left: 50%;
     animation-delay: 20s;

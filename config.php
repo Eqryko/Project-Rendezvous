@@ -1,7 +1,7 @@
 <?php
 // config.php
 $host = "localhost";
-$db   = "sito";   
+$db   = "astronauticadb";   
 $user = "root";
 $pass = "";
 $charset = "utf8mb4";

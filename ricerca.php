@@ -4,7 +4,7 @@ session_start();
 $host = "localhost";
 $user = "root";
 $password = "";
-$db_name = "sito";
+$db_name = "astronauticadb";
 
 $conn = new mysqli($host, $user, $password, $db_name);
 
