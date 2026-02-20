@@ -4,7 +4,7 @@ Informatica
 -->
 
 <?php
-//session_start();
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -33,10 +33,10 @@ Informatica
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
     <div class="Main">
-        <h1> H1 </h1>
+        <h1> Main </h1>
 
         <form action="" method="post">
-            <h2>H2</h2>
+            <h2>Title</h2>
 
             <p>Ultime aggiunte</p>
             <a href="ricerca.php" class="toggle-link">Ricerca</a><br>
