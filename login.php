@@ -2,6 +2,8 @@
 session_start();
 require "config.php";
 
+date_default_timezone_set("Europe/Rome");
+
 // Se già loggato, vai in area riservata
 if (isset($_SESSION["user_id"])) {
     header("Location: profilo.php");
@@ -24,7 +26,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // -------------------------
     if ($action === "register") {
         $username = trim($_POST["username"] ?? "");
+        $nome = trim($_POST["nome"] ?? "");
+        $cognome = trim($_POST["cognome"] ?? "");
         $email = trim($_POST["email"] ?? "");
+
         $password = $_POST["password"] ?? "";
 
         if ($username === "" || $email === "" || $password === "") {
@@ -33,21 +38,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errore = "Email non valida.";
             $tab = "register";
-        } elseif (strlen($password) < 6) {
-            $errore = "La password deve avere almeno 6 caratteri.";
+        } elseif (strlen($password) < 5) {
+            $errore = "La password deve avere almeno 5 caratteri.";
             $tab = "register";
         } else {
             // controllo duplicati
-            $stmt = $conn->prepare("SELECT id FROM utente WHERE username = ? OR email = ?");
+            $stmt = $conn->prepare("SELECT id_utente FROM utente WHERE username = ? OR email = ?");
             $stmt->execute([$username, $email]);
             if ($stmt->fetch()) {
                 $errore = "Username o email già registrati.";
                 $tab = "register";
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-
-                $stmt = $conn->prepare("INSERT INTO utente (username, email, password_hash) VALUES (?, ?, ?)");
-                $stmt->execute([$username, $email, $hash]);
+                
+                $now = date("Y-m-d H:i:s");
+                $stmt = $conn->prepare("INSERT INTO utente (username, nome, cognome, email, password_hash, ruolo, data_registrazione, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$username, $nome, $cognome, $email, $password, "UTENTE", $now, 1]);
 
                 $successo = "Registrazione completata! Ora puoi fare login.";
                 $tab = "login";
@@ -83,7 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $_SESSION["email"] = $user["email"];
                     $_SESSION["ruolo"] = $user["ruolo"];
                     $_SESSION["data_registrazione"] = $user["data_registrazione"];
-                    echo "Login riuscito! E' possibile chiudere questa scheda";
+                    header("Location: profilo.php");
+                    //exit();
+
                 } else {
                     $errore = "Credenziali non corrette.";
                     $tab = "login";
@@ -154,8 +162,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h2>Accesso</h2>
 
     <div class="tabs">
-        <a href="auth.php?tab=login" class="<?= $tab === "login" ? "active" : "" ?>">Login</a>
-        <a href="auth.php?tab=register" class="<?= $tab === "register" ? "active" : "" ?>">Registrati</a>
+        <a href="login.php?tab=login" class="<?= $tab === "login" ? "active" : "" ?>">Login</a>
+        <a href="login.php?tab=register" class="<?= $tab === "register" ? "active" : "" ?>">Registrati</a>
     </div>
 
     <?php if ($errore): ?>
@@ -177,6 +185,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <input type="hidden" name="action" value="register">
             <label>Username</label>
             <input type="text" name="username" required>
+            <label>Nome</label>
+            <input type="text" name="nome" required>
+            <label>Cognome</label>
+            <input type="text" name="cognome" required>
             <label>Email</label>
             <input type="email" name="email" required>
             <label>Password</label>

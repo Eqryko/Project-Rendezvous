@@ -6,6 +6,14 @@ if (!isset($_SESSION["user_id"])) {
     header("Location: login.php");
     exit();
 }
+
+if (isset($_POST['logout'])) { 
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +73,7 @@ if (!isset($_SESSION["user_id"])) {
             margin-top: 30px;
         }
         
-        a {
+        button {
             display: inline-block;
             margin: 0 10px;
             padding: 10px 20px;
@@ -128,8 +136,17 @@ if (!isset($_SESSION["user_id"])) {
         </div>
         
         <div class="actions">
-            <a href="edit-profile.php">Modifica Profilo</a>
-            <a href="logout.php" class="logout">Logout</a>
+            
+
+            <form method="post">
+                <button type="submit" name="logout" class="logout">
+                Logout
+                </button>
+                <button type="submit" name="edit_profile" class="edit_profile">
+                Edit Profile (coming soon)
+                </button>
+            </form>
+            
         </div>
     </div>
 </body>
