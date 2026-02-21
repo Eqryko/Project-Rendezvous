@@ -62,6 +62,7 @@ if (isset($_GET['ajax'])) {
 </head>
 <body>
     <header class="Nav">
+        <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
         <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>

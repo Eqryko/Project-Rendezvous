@@ -3,8 +3,6 @@ session_start();
 $id = $_GET['id'] ?? null;
 require "config.php";
 
-// 1. Corretto "apporvatore" in "approvatore"
-// 2. Aggiunti alias (AS nome_voce, ecc.) per accedere facilmente ai dati
 $query = "SELECT v.nome AS nome_voce, 
                  v.stato, 
                  v.data_creazione, 
@@ -38,6 +36,7 @@ if (!$voce) {
     
     <img class="logo" src="media/greenmantis.png">
     <header class="Nav">
+        <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
         <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>
@@ -45,6 +44,7 @@ if (!$voce) {
     </header>
     <a href="profilo.php" class="toggle-link" target="_blank">Profilo</a>
     <div class="container">
+        <br><br>
         <h1>Scheda Voce</h1>
 
         <div class="profile-item">

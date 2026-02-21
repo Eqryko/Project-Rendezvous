@@ -10,21 +10,20 @@ body {
     min-height: 100vh;
     font-family: sans-serif;
     line-height: 1.6;
-    background-color: #3d3d3d; /* Se vuoi lo sfondo scuro come prima */
+    background-color: #3d3d3d;
 }
 
 
 .Main {
-    flex: 1; /* Fondamentale: riempie lo spazio vuoto e spinge il footer giù */
-    margin-left: 5%; /* Sposta il contenuto a destra (regola la % come vuoi) */
+    flex: 1;
+    margin-left: 5%;
     margin-right: 5%;
-    padding: 60px 20px 40px 20px; /* 120px sopra serve per non finire sotto la Nav */
+    padding: 60px 20px 40px 20px;
     box-sizing: border-box;
 }
 
-/* Se hai lo sfondo scuro, rendi i testi leggibili nel Main */
 .Main h2, .Main p {
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
 }
 
 table {
@@ -35,13 +34,15 @@ table {
 
 th,
 td {
-    border: 1px solid #ddd;
+    border: 1px solid #817f7f;
     padding: 12px;
     text-align: left;
+    color: white;
 }
 
 th {
     background-color: #3d3d3d;
+    color: white;
 }
 
 input {

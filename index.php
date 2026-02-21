@@ -27,16 +27,17 @@ Informatica
 
     <img class="logo" src="media/greenmantis.png">
     <header class="Nav">
+        <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
         <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
     <div class="Main">
-        <h1> H1 </h1>
+        <h1> Project Rendezvous </h1>
 
         <form action="" method="post">
-            <h2>H2</h2>
+            <h2> Catalogo</h2>
 
             <p>Ultime aggiunte</p>
             <a href="ricerca.php" class="toggle-link">Ricerca</a><br>
