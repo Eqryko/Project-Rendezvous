@@ -29,7 +29,7 @@ PROJECT RENDEZVOUS
 
 <body>
 
-    <img class="logo" src="media/greenmantis.png">
+    <img class="logo" src="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <header class="Nav">
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
@@ -37,6 +37,8 @@ PROJECT RENDEZVOUS
         <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
+    <img class="pad" src="media/iss.jpg">
+    <br><br>
     <div class="Main">
         <h1> Project Rendezvous </h1>
 
@@ -48,22 +50,18 @@ PROJECT RENDEZVOUS
             <h2> Catalogo</h2>
 
             <p>Ultime aggiunte</p>
-            <a href="ricerca.php" class="toggle-link">Ricerca</a><br>
+            <a href="ricerca.php" class="ricerca">Ricerca</a><br>
             
-            <p>
-                <input type="submit" value="Invia" name="Invia">
-                <input type="reset" value="Cancella" name="Cancella">
-            </p>
         </form>
     </div><br><br><br>
     <hr>
     <footer>
         <p id="usage"></p>
-        <i> Credits: Refosco Enrico <br>
-            enricoorefosco@gmail.com </i> <br>
+        <i> Credits: <br>
+            Refosco Enrico - enricoorefosco@gmail.com <br>
+            Munaro Alex - alexmunaro22@gmail.com
+        </i> <br>
     </footer>
-
-
 </body>
 
 </html>
