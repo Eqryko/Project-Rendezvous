@@ -80,8 +80,7 @@ if (isset($_POST['save_profile'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profilo Utente</title>
-    <link rel="stylesheet" href="styles/stylee.css">
-    <link rel="stylesheet" href="styles/pstyle.css">
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
     <div class="container">

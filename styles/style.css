@@ -250,3 +250,80 @@ input[type="radio"] {
     cursor: pointer;
 }
 */
+
+
+
+
+/* VOCE */
+
+
+.container {
+    width: 900px;           /* Larghezza fissa che desideravi */
+    max-width: 95%;        /* Sicurezza per schermi piccoli */
+    margin: 120px auto 50px auto; /* Più spazio sopra per non finire sotto la Nav */
+    color: white;
+    padding: 40px;
+    border-radius: 15px;    /* Arrotondato come il resto del sito */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    border-color: #000;
+}
+
+.container h1 {
+    margin-bottom: 30px;
+    text-align: center;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.profile-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-item label {
+    color: #a3a3a3;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.profile-item span {
+    font-size: 18px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: #e2e2e2;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.container a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.container h1, h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.container a:hover {
+    background-color: #5a6268;
+}
