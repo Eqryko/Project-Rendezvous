@@ -107,6 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="utf-8">
     <title>Login / Registrazione</title>
+    <link rel="stylesheet" href="styles/stylee.css">
     <style>
         body {
             font-family: Arial;

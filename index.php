@@ -25,6 +25,85 @@ PROJECT RENDEZVOUS
     <meta name="author" content="Refosco Enrico">
     <link rel="stylesheet" href="styles/stylee.css">
     <script src="scripts/script.js" defer></script>
+    <style>
+        
+/* Sezione Astronauta Stilizzata */
+.Astronaut-Highlight {
+    max-width: 800px; /* Larghezza massima del blocco */
+    margin: 40px auto; /* Centra il blocco nella pagina */
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6); /* Sfondo scuro semitrasparente */
+    border: 2px solid #11e4ff; /* Bordo color ciano come il tuo tema */
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(17, 228, 255, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.Highlight-Container {
+    display: flex;
+    align-items: center; /* Centra verticalmente testo e immagine */
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.Highlight-Text {
+    flex: 1; /* Il testo occupa tutto lo spazio disponibile a sinistra */
+    text-align: left;
+}
+
+.Highlight-Text h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #11e4ff;
+}
+
+.quote {
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+cite {
+    font-weight: bold;
+    color: #11e4ff;
+    font-style: normal;
+}
+
+/* Blocco Immagine a dimensione fissa */
+.Highlight-Frame {
+    flex: 0 0 300px; /* Non cresce, non rimpicciolisce, base di 250px */
+    width: 300px;
+    height: 300px;
+    border: 3px solid white;
+    border-radius: 15px;
+    overflow: hidden; /* Taglia l'immagine se esce dai bordi */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.Highlight-Frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Mantiene le proporzioni dell'immagine riempiendo il quadrato */
+}
+
+/* Mobile responsive: se lo schermo è piccolo, l'immagine va sotto */
+@media (max-width: 600px) {
+    .Highlight-Container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .Highlight-Text {
+        text-align: center;
+    }
+    .Highlight-Frame {
+        flex: 0 0 200px;
+        width: 200px;
+        height: 200px;
+    }
+}
+        </style>
 </head>
 
 <body>
@@ -53,8 +132,23 @@ PROJECT RENDEZVOUS
             <a href="ricerca.php" class="ricerca">Ricerca</a><br>
             
         </form>
-    </div><br><br><br>
+    </div>
+    <br><br><br>
     <hr>
+    <div class="Astronaut-Highlight">
+    <div class="Highlight-Container">
+        <div class="Highlight-Text">
+            <h2>Ispirazione dallo Spazio</h2>
+            <p>Quando Yuri Gagarin atterrò il 12 aprile 1961 dopo il volo della Vostok 1, la prima persona che incontrò fu una bambina (Rita) e sua nonna, in un campo vicino al villaggio di Smelovka. Indossava ancora la tuta spaziale arancione, e loro erano spaventate.</p>
+            <p class="quote">
+"Non abbiate paura, sono uno di voi, un sovietico! Sono venuto dallo spazio e devo chiamare Mosca!"</p>
+            <cite> - Yuri Gagarin </cite>
+        </div>
+        <div class="Highlight-Frame">
+            <img src="media/YuriGagarin.jpg" alt="Astronauta">
+        </div>
+    </div>
+</div>
     <footer>
         <p id="usage"></p>
         <i> Credits: <br>
