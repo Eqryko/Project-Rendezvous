@@ -77,7 +77,7 @@ img:hover {
     justify-content: center;
     text-align: center;
     flex: 1;
-    background-color: #3d3d3db4;
+    background-color: #3d3d3de8;
     max-width: 700px;
     margin: 0 auto;
     margin-top: 100px;
@@ -116,9 +116,14 @@ p {
 /* PAD */
 
 .pad {
-    position: absolute;
+    position: fixed; /* L'immagine resta bloccata sullo schermo */
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
+    height: 100vh;   /* Copre l'intera altezza del browser */
+    object-fit: cover; /* Evita che l'immagine si schiacci se ridimensioni la finestra */
+    z-index: -1;     /* La sposta dietro a tutti i testi e i contenuti */
+    filter: brightness(50%); /* Opzionale: scurisce l'immagine per far leggere meglio i testi */
 }
 
 .pad a:hover {
