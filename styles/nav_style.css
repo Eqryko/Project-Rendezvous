@@ -1,0 +1,78 @@
+/*  NAV fisso */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    /* sopra il background animato */
+    display: flex;
+    background-color: black;
+    justify-content: center;
+    gap: 100px;
+    font-weight: bold;
+    padding: 20px 0;
+}
+
+header a {
+    color: #11e4ff;
+    text-decoration: none;
+    border-radius: 30px;
+    padding: 8px 30px;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+header a::before {
+    color: #11e4ff;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+header a:hover {
+    color: #11e4ff;
+    text-shadow: 0 0 15px #11e4ff, 0 0 30px #068ce6;
+    text-decoration: none;
+}
+
+/* LOGO */
+
+.logo {
+    position: fixed;
+    top: 10px;
+    left: 30px;
+    width: 50px;
+    z-index: 100;
+    /* sempre sopra tutto */
+    border-radius: 0;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+/* FOOTER */
+
+footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 15px;
+    background-color: #222;
+    color: #fff;
+    font-size: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+footer p {
+    text-align: left;
+    margin: 0;
+}
+
+footer i {
+    color: #bbb;
+}

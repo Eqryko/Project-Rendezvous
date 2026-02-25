@@ -1,20 +1,26 @@
-html, body {
+html {
+    max-width: 100%;
+}
+
+html,
+body {
     height: 100%;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    font-family: sans-serif;
-    line-height: 1.6;
     background-color: #3d3d3d;
+    font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
 }
 
 
-.Main {
+.Main1 {
     flex: 1;
     margin-left: 5%;
     margin-right: 5%;
@@ -22,7 +28,7 @@ body {
     box-sizing: border-box;
 }
 
-.Main h2, .Main p {
+.Main1 h2, .Main1 p {
     color: rgb(255, 255, 255);
 }
 
@@ -65,68 +71,29 @@ td a:hover {
     color: #0056b3;
 }
 
-
-/*  NAV fisso sopra tutto */
-.Nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 99;
-    /* sopra il background animato */
-    display: flex;
-    background-color: black;
-    justify-content: center;
-    gap: 100px;
-    font-weight: bold;
-    padding: 20px 0;
-}
-
-.Nav a {
-    color: #11e4ff;
-    text-decoration: none;
+#creavoce {
+    color: white;
     border-radius: 30px;
+    margin-left: 800px;
     padding: 8px 30px;
     transition: all 0.3s ease;
     font-size: 20px;
 }
 
-.Nav a::before {
-    content: "◆ ";
-    color: #11e4ff;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+
+
+#creavoce:hover {
+    color: white;
+    text-shadow: 0 0 15px #d5e4e6, 0 0 30px #ffffff;
+    text-decoration: none;
 }
 
-.Nav a:hover::before {
-    opacity: 1;
-}
-
-.Nav a:hover {
-    color: #11e4ff;
-    text-shadow: 0 0 15px #11e4ff, 0 0 30px #068ce6;
-}
-
-
-/*------------------------------------------------------------------*/
-
-footer {
-    margin-top: auto;
-    text-align: center;
-    padding: 15px;
-    background-color: #222;
-    color: #fff;
-    font-size: 20px;
-    width: 100%;
-    box-sizing: border-box;
+.Main,
+footer,
+form,
+h1,
+h2,
+p {
     position: relative;
-}
-
-footer p {
-    text-align: left;
-    margin: 0;
-}
-
-footer i {
-    color: #bbb;
+    z-index: 2;
 }

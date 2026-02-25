@@ -76,43 +76,32 @@ $dettagli = $stmt_det->fetch(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dettaglio <?php echo ucfirst($tipo) ?>: <?php echo htmlspecialchars($voce['nome_voce']); ?></title>
     <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/nav_style.css">
 </head>
 <body>
 
-    <img class="logo" src="media/greenmantis.png">
+    <img class="logo" src="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <header class="Nav">
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
     <div class="container">
-        <br><br>
         <h1><?php echo htmlspecialchars($voce["nome_voce"]); ?></h1>
-        <h2 style="color:black"><?php echo ucfirst($tipo); ?></h2>
         <div class="profile-section">
-            <h3>Informazioni Generali</h3>
             <div class="profile-item">
-                <label>Nome Voce:</label>
-                <span><?php echo htmlspecialchars($voce["nome_voce"]); ?></span>
-            </div>
-            <div class="profile-item">
-                <label>Stato:</label>
-                <span style="color:black;" class="status-badge"><?php echo htmlspecialchars($voce["stato"]); ?></span>
-            </div>
-            <div class="profile-item">
-                <label>Creato da:</label>
-                <span><?php echo htmlspecialchars($voce["creatore_name"]); ?> il
-                    <?php echo $voce["data_creazione"]; ?></span>
-            </div>
+                <span><?php echo ucfirst(htmlspecialchars($voce["tipo"])); ?></span>
         </div>
 
-        <hr>
-
         <div class="details-section">
-            <h3>Dettagli Specifici</h3>
+            <h3>Informazioni Generali</h3>
+            <div class="profile-item">
+                <label>Nome:</label>
+                <span><?php echo htmlspecialchars($voce["nome_voce"]); ?></span>
+            </div>
             <?php if ($dettagli): ?>
                 <?php foreach ($dettagli as $chiave => $valore):
                     // 1. Saltiamo l'ID principale
@@ -146,13 +135,22 @@ $dettagli = $stmt_det->fetch(PDO::FETCH_ASSOC);
                 <p>Nessun dettaglio aggiuntivo trovato per questa voce.</p>
             <?php endif; ?>
         </div>
-
         <?php if ($voce['approvatore_name']): ?>
             <div class="approval-info" style="margin-top: 20px; font-size: 0.8em; color: gray;">
-                Approvata da <?php echo htmlspecialchars($voce["approvatore_name"]); ?> il
-                <?php echo $voce["data_approvazione"]; ?>
-            </div>
-        <?php endif; ?>
-    </div>
+                Creata da
+                <?php echo htmlspecialchars($voce["creatore_name"]); ?> il
+                <?php echo $voce["data_creazione"]; ?>
+                <div class="profile-item">
+                    Stato:</label>
+                    <span style="color:black;" class="status-badge">
+                        <?php echo htmlspecialchars($voce["stato"]); ?>
+                    </span>
+                    <br>Approvata da <?php echo htmlspecialchars($voce["approvatore_name"]); ?> il
+                    <?php echo $voce["data_approvazione"]; ?>
+                </div>
+            <?php endif; ?>
+
+
+        </div>
 </body>
 </html>

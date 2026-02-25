@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $tab = "register";
             } else {
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                
+
                 $now = date("Y-m-d H:i:s");
                 $stmt = $conn->prepare("INSERT INTO utente (username, nome, cognome, email, password_hash, ruolo, data_registrazione, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$username, $nome, $cognome, $email, $password, "UTENTE", $now, 1]);
@@ -107,96 +107,62 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="utf-8">
     <title>Login / Registrazione</title>
-    <link rel="stylesheet" href="styles/stylee.css">
+    <link rel="stylesheet" href="styles/nav_style.css">
+    <link rel="stylesheet" href="styles/style.css">
     <style>
-        body {
-            font-family: Arial;
-            max-width: 480px;
-            margin: 40px auto;
-        }
-
-        .tabs a {
-            padding: 10px 14px;
-            display: inline-block;
-            text-decoration: none;
-            border: 1px solid #ccc;
-            margin-right: 6px;
-        }
-
-        .active {
-            background: #eee;
-        }
-
-        form {
-            border: 1px solid #ccc;
-            padding: 16px;
-            margin-top: 12px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-        }
-
-        button {
-            padding: 10px 14px;
-        }
-
-        .err {
-            color: #b00020;
-        }
-
-        .ok {
-            color: green;
-        }
+        
     </style>
 </head>
 <body>
-    <header class="Nav">
+
+    <img class="logo"
+        src="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
+    <header>
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://github.com/Eqryko" target="_blank"> GitHub Profile</a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing"
+            target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
+    <br><br><br><br>
     <h2>Accesso</h2>
+    <div class="log">
+        <div class="tabs">
+            <a href="login.php?tab=login" class="<?= $tab === "login" ? "active" : "" ?>">Login</a>
+            <a href="login.php?tab=register" class="<?= $tab === "register" ? "active" : "" ?>">Registrati</a>
+        </div>
 
-    <div class="tabs">
-        <a href="login.php?tab=login" class="<?= $tab === "login" ? "active" : "" ?>">Login</a>
-        <a href="login.php?tab=register" class="<?= $tab === "register" ? "active" : "" ?>">Registrati</a>
+        <?php if ($errore): ?>
+            <p class="err"><?= htmlspecialchars($errore) ?></p><?php endif; ?>
+        <?php if ($successo): ?>
+            <p class="ok"><?= htmlspecialchars($successo) ?></p><?php endif; ?>
+
+        <?php if ($tab === "login"): ?>
+            <form method="post">
+                <input type="hidden" name="action" value="login">
+                <label><b>Username o Email</b></label>
+                <input type="text" name="userOrEmail" required>
+                <label><b>Password</b></label>
+                <input type="password" name="password" required>
+                <button type="submit">Accedi</button>
+            </form>
+        <?php else: ?>
+            <form method="post">
+                <input type="hidden" name="action" value="register">
+                <label>Username</label>
+                <input type="text" name="username" required>
+                <label>Nome</label>
+                <input type="text" name="nome" required>
+                <label>Cognome</label>
+                <input type="text" name="cognome" required>
+                <label>Email</label>
+                <input type="email" name="email" required>
+                <label>Password</label>
+                <input type="password" name="password" required>
+                <button type="submit">Registrati</button>
+            </form>
+        <?php endif; ?>
     </div>
-
-    <?php if ($errore): ?>
-        <p class="err"><?= htmlspecialchars($errore) ?></p><?php endif; ?>
-    <?php if ($successo): ?>
-        <p class="ok"><?= htmlspecialchars($successo) ?></p><?php endif; ?>
-
-    <?php if ($tab === "login"): ?>
-        <form method="post">
-            <input type="hidden" name="action" value="login">
-            <label>Username o Email</label>
-            <input type="text" name="userOrEmail" required>
-            <label>Password</label>
-            <input type="password" name="password" required>
-            <button type="submit">Accedi</button>
-        </form>
-    <?php else: ?>
-        <form method="post">
-            <input type="hidden" name="action" value="register">
-            <label>Username</label>
-            <input type="text" name="username" required>
-            <label>Nome</label>
-            <input type="text" name="nome" required>
-            <label>Cognome</label>
-            <input type="text" name="cognome" required>
-            <label>Email</label>
-            <input type="email" name="email" required>
-            <label>Password</label>
-            <input type="password" name="password" required>
-            <button type="submit">Registrati</button>
-        </form>
-    <?php endif; ?>
-
 </body>
 </html>
