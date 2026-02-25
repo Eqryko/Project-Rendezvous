@@ -8,6 +8,9 @@ $programmi = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'programm
 $vettori = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'vettore'")->fetchAll(PDO::FETCH_ASSOC);
 $veicoli = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'veicolo'")->fetchAll(PDO::FETCH_ASSOC);
 $lanci = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'evento'")->fetchAll(PDO::FETCH_ASSOC);
+$immagine_url = !empty($_POST['immagine_url']) ? $_POST['immagine_url'] : null;
+
+
 
 // Funzione utile per trasformare stringhe vuote in NULL per il DB
 function emptyToNull($value)
@@ -29,8 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->beginTransaction();
 
         // 1. Inserimento nella tabella 'voce'
-        $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato) VALUES (?, ?, ?, 'IN_APPROVAZIONE')");
-        $stmt->execute([$nome, $tipo, $id_creatore]);
+        // Nella query INSERT della tabella 'voce'
+        $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url) VALUES (?, ?, ?, 'IN_APPROVAZIONE', ?)");
+        $stmt->execute([$nome, $tipo, $id_creatore, $immagine_url]);
         $id_voce = $conn->lastInsertId();
 
         // 2. Inserimento nella tabella specifica in base al tipo
@@ -138,6 +142,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <option value="missione">Missione</option>
 
             </select>
+
+            <label>Link Immagine (URL):</label>
+            <input type="url" name="immagine_url" placeholder="https://esempio.com/immagine.jpg">
 
             <div id="fields_astronauta" class="dynamic-fields">
                 <h3>Dettagli Astronauta</h3>

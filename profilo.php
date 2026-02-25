@@ -95,6 +95,7 @@ if (isset($_POST['save_profile'])) {
             target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
+    
     <div class="container">
         <h1>Profilo Utente</h1>
 
