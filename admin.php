@@ -1,7 +1,7 @@
 <?php
 // admin.php
 session_start();
-require "config.php"; // Assicurati che config.php definisca $conn come oggetto PDO
+require "config.php"; // config.php definisce $conn come PDO
 
 // 1. Controllo Accesso
 if (!isset($_SESSION['user_id'])) {
@@ -21,7 +21,7 @@ if (!$user || $user['ruolo'] !== 'ADMIN') {
 }
 
 // 3. Recupero Voci in Attesa
-// Selezioniamo anche id_originale per capire se è una nuova voce o una modifica
+// anche id_originale per capire se è una nuova voce o una modifica
 $query_attesa = "SELECT v.*, u.username 
                  FROM voce v 
                  JOIN utente u ON v.creatore = u.id_utente 

@@ -1,5 +1,16 @@
 <?php
 session_start();
+// voce.php
+// file + pesante
+
+/*
+Cosa fa:
+- Recupera i dati base della voce (nome, tipo, stato, creatore, approvatore, ecc.)
+- Recupera i dettagli specifici in base al tipo (astronauta, missione, ecc.)
+- Gestisce la logica di approvazione/rifiuto per gli admin
+- Gestisce la logica di modifica per gli utenti (creazione di una revisione in attesa)
+*/
+
 $id = $_GET['id'] ?? null;
 require "config.php";
 
@@ -7,7 +18,7 @@ require "config.php";
 $query = "SELECT v.nome AS nome_voce, 
                  v.tipo, 
                  v.stato, 
-                 v.id_originale,  /* <--- AGGIUNGI QUESTA RIGA */
+                 v.id_originale,
                  v.data_creazione, 
                  v.data_approvazione, 
                  u.username AS creatore_name, 
@@ -64,6 +75,7 @@ if (isset($_POST['rifiuta_voce']) && isset($_SESSION['ruolo']) && $_SESSION['ruo
         die("Errore durante il rifiuto: " . $e->getMessage());
     }
 }
+
 // --- GESTIONE ELIMINAZIONE DEFINITIVA ADMIN ---
 if (isset($_POST['elimina_definitivamente']) && isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN') {
     try {
@@ -81,6 +93,7 @@ if (isset($_POST['elimina_definitivamente']) && isset($_SESSION['ruolo']) && $_S
         die("Errore durante l'eliminazione: " . $e->getMessage());
     }
 }
+
 // --- GESTIONE APPROVAZIONE ADMIN ---
 if (isset($_POST['approva_voce']) && $_SESSION['ruolo'] === 'ADMIN') {
     try {
@@ -121,8 +134,8 @@ if (isset($_POST['approva_voce']) && $_SESSION['ruolo'] === 'ADMIN') {
                     $conn->prepare($sql_up)->execute($params);
                 }
 
-                // 3. Elimina la revisione (la riga "ombra")
-                // Il database dovrebbe avere ON DELETE CASCADE, altrimenti cancella manualmente:
+                // 3. Elimina la revisione
+                // Il database ha ON DELETE CASCADE
                 $conn->prepare("DELETE FROM voce WHERE id_voce = ?")->execute([$id_da_approvare]);
 
                 $redirect_id = $id_originale;
@@ -165,7 +178,6 @@ switch ($tipo) {
         break;
 
     case 'astronauta':
-        // Se avessi una tabella per le nazioni, faresti un altro join qui
         $query_dettagli = "SELECT * FROM astronauta WHERE id_voce = ?";
         break;
 
@@ -194,7 +206,7 @@ if (isset($_POST['save_voce'])) {
     try {
         $conn->beginTransaction();
         $id_voce_attuale = $_GET['id'];
-        // Assicurati che 'ruolo' sia salvato in sessione al login
+        // 'ruolo'  salvato in sessione al login
         $is_admin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN');
 
         if ($is_admin) {

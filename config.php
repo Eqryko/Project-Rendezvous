@@ -10,6 +10,7 @@ $charset = "utf8mb4";
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
 // PDO è un'estensione di PHP che fornisce un'interfaccia per accedere a diversi database in modo sicuro e efficiente.
+// pdo sta per PHP Data Objects
 
 try {
     $conn = new PDO($dsn, $user, $pass); // crea connessione al database usando PDO
