@@ -75,6 +75,19 @@ if (isset($_POST['save_profile'])) {
             $edit_mode = true;
         }
     }
+
+    
+}
+
+// Recupero voci create dall'utente
+$voci_utente = [];
+
+try {
+    $stmt_voci = $conn->prepare("SELECT id_voce, nome FROM voce WHERE creatore = ? ORDER BY id_voce DESC");
+    $stmt_voci->execute([$_SESSION["user_id"]]);
+    $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errore = "Errore nel recupero delle voci: " . $e->getMessage();
 }
 ?>
 
@@ -148,6 +161,9 @@ if (isset($_POST['save_profile'])) {
                 <?php endif; ?>
             </div>
 
+            
+
+
             <?php if ($edit_mode): ?>
                 <div class="profile-item">
                     <label>Cambia Password:</label>
@@ -165,8 +181,7 @@ if (isset($_POST['save_profile'])) {
                 <label>Data Registrazione:</label>
                 <span><?php echo htmlspecialchars($_SESSION["data_registrazione"]); ?></span>
             </div>
-
-            <div class="actions">
+<div class="actions">
                 <?php if ($edit_mode): ?>
                     <button type="submit" name="save_profile" class="btn-green">Salva Modifiche</button>
                     <button type="submit" name="cancel_edit" class="btn-gray">Annulla</button>
@@ -175,6 +190,30 @@ if (isset($_POST['save_profile'])) {
                     <button type="submit" name="logout" class="logout">Logout</button>
                 <?php endif; ?>
             </div>
+
+<br><br><br>
+<hr>
+    <div class="user-posts">
+    <h2>Le tue voci create</h2>
+
+    <?php if (empty($voci_utente)): ?>
+        <p>Non hai ancora creato nessuna voce.</p>
+    <?php else: ?>
+        <ul>
+            <?php foreach ($voci_utente as $voce): ?>
+                <li>
+                    <a href="voce.php?id=<?php echo $voce['id_voce']; ?>">
+                        <?php echo htmlspecialchars($voce['nome']); ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</div>
+<hr><br><br>
+                
+
+            
 
         </form>
     </div>

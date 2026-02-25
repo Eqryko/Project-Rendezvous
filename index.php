@@ -53,7 +53,8 @@ PROJECT RENDEZVOUS
 
             <p>Ultime aggiunte</p>
             <a href="ricerca.php" class="ricerca">Ricerca</a><br>
-            
+            <br>
+            <a href="admin.php" class="admin">Amministrazione</a><br>
         </form>
     </div>
     <br><br><br>

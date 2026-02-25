@@ -29,7 +29,7 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
     $tipo = $_POST['tipo'];
-    $id_creatore = $_SESSION['id_utente'];
+    $id_creatore = $_SESSION['user_id'];
 
     // Validazione base
     try {
@@ -37,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // 1. Inserimento nella tabella 'voce'
         // Nella query INSERT della tabella 'voce'
-        $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url) VALUES (?, ?, ?, 'IN_APPROVAZIONE', ?)");
-        $stmt->execute([$nome, $tipo, $id_creatore, $immagine_url]);
+        $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$nome, $tipo, $id_creatore, 'IN_ATTESA', $immagine_url]);
         $id_voce = $conn->lastInsertId();
 
         // 2. Inserimento nella tabella specifica in base al tipo

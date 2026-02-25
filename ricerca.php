@@ -3,7 +3,7 @@
 session_start();
 require "config.php";
 
-$conn = new mysqli($host, $user, $password, $db_name);
+$conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
     die("Connessione fallita.");
@@ -14,10 +14,10 @@ if (isset($_GET['ajax'])) {
     $nome = isset($_GET['nome']) ? $_GET['nome'] : '';
 
     if (empty($nome)) {
-        $sql = "SELECT * FROM voce";
+        $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA'";
         $stmt = $conn->prepare($sql);
     } else {
-        $sql = "SELECT * FROM voce WHERE nome LIKE ?";
+        $sql = "SELECT * FROM voce WHERE nome LIKE ? AND stato = 'APPROVATA'";
         $stmt = $conn->prepare($sql);
         $param = "%$nome%";
         $stmt->bind_param("s", $param);
