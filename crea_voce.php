@@ -30,32 +30,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
     $tipo = $_POST['tipo'];
     $id_creatore = $_SESSION['user_id'];
+    $immagine_url = !empty($_POST['immagine_url']) ? $_POST['immagine_url'] : null;
 
-    // Validazione base
     try {
         $conn->beginTransaction();
 
         // 1. Inserimento nella tabella 'voce'
-        // Nella query INSERT della tabella 'voce'
-        $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$nome, $tipo, $id_creatore, 'IN_ATTESA', $immagine_url]);
+        $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url) VALUES (?, ?, ?, 'IN_ATTESA', ?)");
+        $stmt->execute([$nome, $tipo, $id_creatore, $immagine_url]);
         $id_voce = $conn->lastInsertId();
 
-        // 2. Inserimento nella tabella specifica in base al tipo
-        // Nota: Qui recuperiamo i campi dinamici dal $_POST
+        // 2. Inserimento nella tabella specifica
         switch ($tipo) {
             case 'astronauta':
                 $sql = "INSERT INTO astronauta (id_voce, nome, cognome, nazione, data_nascita, data_morte) VALUES (?, ?, ?, ?, ?, ?)";
-                $params = [$id_voce, $_POST['astro_nome'], $_POST['astro_cognome'], $_POST['astro_nazione'], $_POST['astro_nascita'], $_POST['astro_morte']];
+                $params = [
+                    $id_voce,
+                    emptyToNull($_POST['astro_nome']),
+                    emptyToNull($_POST['astro_cognome']),
+                    emptyToNull($_POST['astro_nazione']),
+                    emptyToNull($_POST['astro_nascita']),
+                    emptyToNull($_POST['astro_morte'])
+                ];
                 break;
+
             case 'azienda':
-                $sql = "INSERT INTO azienda (id_voce, nomeIntero, nazione, sede, tipo) VALUES (?, ?, ?, ?)";
-                $params = [$id_voce, $_POST['az_nome'], $_POST['az_nazione'], $_POST['az_sede'], $_POST['az_tipo']];
+                // Corretto: 5 colonne e 5 punti di domanda
+                $sql = "INSERT INTO azienda (id_voce, nomeIntero, nazione, sede, tipo) VALUES (?, ?, ?, ?, ?)";
+                $params = [
+                    $id_voce,
+                    emptyToNull($_POST['az_nome']),
+                    emptyToNull($_POST['az_nazione']),
+                    emptyToNull($_POST['az_sede']),
+                    emptyToNull($_POST['az_tipo'])
+                ];
                 break;
+
             case 'missione':
                 $sql = "INSERT INTO missione (id_voce, cospar_id, nome, tipo, destinazione, esito, id_azienda, id_programma, id_vettore, id_veicolo, id_lancio) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $params = [
                     $id_voce,
                     emptyToNull($_POST['miss_cospar']),
@@ -70,22 +83,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     emptyToNull($_POST['miss_lancio'])
                 ];
                 break;
-
         }
 
-        // Esecuzione dell'inserimento specifico
         if (isset($sql)) {
             $stmt_det = $conn->prepare($sql);
             $stmt_det->execute($params);
         }
 
         $conn->commit();
-        header("Location: voce.php?id=" . $id_voce);
+        // Reindirizzamento alla pagina della voce appena creata
+        header("Location: voce.php?id=" . $id_voce . "&msg=created");
         exit();
 
     } catch (Exception $e) {
-        $conn->rollBack();
-        echo "Errore durante il salvataggio: " . $e->getMessage();
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+        // Salviamo l'errore per mostrarlo all'utente
+        $errore_creazione = $e->getMessage();
     }
 }
 ?>
@@ -134,6 +149,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="container">
         <h1>Nuova Voce </h1>
+        <?php if (isset($errore_creazione)): ?>
+            <div style="background: red; color: white; padding: 10px; margin-bottom: 20px;">
+                Errore:
+                <?= htmlspecialchars($errore_creazione) ?>
+            </div>
+        <?php endif; ?>
 
         <form action="crea_voce.php" method="POST">
             <label>Nome della Voce (Titolo):</label>

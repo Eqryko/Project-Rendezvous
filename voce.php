@@ -1,15 +1,13 @@
 <?php
-// voce.php
-// file + grande
 session_start();
-
 $id = $_GET['id'] ?? null;
 require "config.php";
 
-// 1. Recupero dati base dalla tabella 'voce'
+// 1. Recupero i dati base dalla tabella 'voce'
 $query = "SELECT v.nome AS nome_voce, 
                  v.tipo, 
                  v.stato, 
+                 v.id_originale,  /* <--- AGGIUNGI QUESTA RIGA */
                  v.data_creazione, 
                  v.data_approvazione, 
                  u.username AS creatore_name, 
@@ -38,7 +36,6 @@ function generaSelect($nome_campo, $valore_attuale, $lista)
     }
     echo "</select>";
 }
-
 $stmt = $conn->prepare($query);
 $stmt->execute([$id]);
 $voce = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -47,11 +44,106 @@ if (!$voce) {
     die("Errore: Voce non trovata.");
 }
 
-// 2. Recupero dettagli specifici in base al tipo
+// 2. Recupero i dettagli specifici in base al tipo
 $tipo = $voce['tipo'];
 $dettagli = null;
 
-// risoluzione relazioni
+// --- GESTIONE RIFIUTO ADMIN ---
+if (isset($_POST['rifiuta_voce']) && isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN') {
+    try {
+        $id_da_rifiutare = $_POST['id_voce_approva'];
+
+        // Eliminiamo la voce. Se è una modifica, l'originale resta intatto.
+        // Se è un nuovo inserimento, sparisce del tutto.
+        $stmt_del = $conn->prepare("DELETE FROM voce WHERE id_voce = ?");
+        $stmt_del->execute([$id_da_rifiutare]);
+
+        header("Location: admin.php?msg=rejected");
+        exit();
+    } catch (Exception $e) {
+        die("Errore durante il rifiuto: " . $e->getMessage());
+    }
+}
+// --- GESTIONE ELIMINAZIONE DEFINITIVA ADMIN ---
+if (isset($_POST['elimina_definitivamente']) && isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN') {
+    try {
+        $id_da_eliminare = $_GET['id']; // Prendiamo l'ID dall'URL
+
+        // Eliminiamo la voce. 
+        // Se hai impostato le chiavi esterne con ON DELETE CASCADE nel DB, 
+        // verranno eliminate automaticamente anche le righe in 'astronauta', 'missione', ecc.
+        $stmt_del = $conn->prepare("DELETE FROM voce WHERE id_voce = ?");
+        $stmt_del->execute([$id_da_eliminare]);
+
+        header("Location: ricerca.php?msg=deleted");
+        exit();
+    } catch (Exception $e) {
+        die("Errore durante l'eliminazione: " . $e->getMessage());
+    }
+}
+// --- GESTIONE APPROVAZIONE ADMIN ---
+if (isset($_POST['approva_voce']) && $_SESSION['ruolo'] === 'ADMIN') {
+    try {
+        $conn->beginTransaction();
+        $id_da_approvare = $_POST['id_voce_approva'];
+
+        // Recuperiamo i dati della voce in attesa
+        $stmt = $conn->prepare("SELECT * FROM voce WHERE id_voce = ?");
+        $stmt->execute([$id_da_approvare]);
+        $voce_attesa = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($voce_attesa) {
+            if (!empty($voce_attesa['id_originale'])) {
+                // CASO MODIFICA: Sovrascriviamo l'originale con i dati nuovi
+                $id_originale = $voce_attesa['id_originale'];
+
+                // 1. Aggiorna Tabella Voce Originale
+                $up_v = $conn->prepare("UPDATE voce SET nome = ?, immagine_url = ?, stato = 'APPROVATA', approvatore = ? WHERE id_voce = ?");
+                $up_v->execute([$voce_attesa['nome'], $voce_attesa['immagine_url'], $_SESSION['user_id'], $id_originale]);
+
+                // 2. Aggiorna Tabella Specifica (dinamico)
+                // Recuperiamo le colonne dalla tabella specifica della revisione
+                $stmt_spec = $conn->prepare("SELECT * FROM {$voce_attesa['tipo']} WHERE id_voce = ?");
+                $stmt_spec->execute([$id_da_approvare]);
+                $dati_spec = $stmt_spec->fetch(PDO::FETCH_ASSOC);
+
+                if ($dati_spec) {
+                    $update_parts = [];
+                    $params = [];
+                    foreach ($dati_spec as $col => $val) {
+                        if ($col !== 'id_voce' && $col !== 'id_lancio') { // Escludiamo chiavi primarie/esterne fisse
+                            $update_parts[] = "$col = ?";
+                            $params[] = $val;
+                        }
+                    }
+                    $sql_up = "UPDATE {$voce_attesa['tipo']} SET " . implode(', ', $update_parts) . " WHERE id_voce = ?";
+                    $params[] = $id_originale;
+                    $conn->prepare($sql_up)->execute($params);
+                }
+
+                // 3. Elimina la revisione (la riga "ombra")
+                // Il database dovrebbe avere ON DELETE CASCADE, altrimenti cancella manualmente:
+                $conn->prepare("DELETE FROM voce WHERE id_voce = ?")->execute([$id_da_approvare]);
+
+                $redirect_id = $id_originale;
+            } else {
+                // CASO NUOVA VOCE: Basta approvarla
+                $stmt_app = $conn->prepare("UPDATE voce SET stato = 'APPROVATA', approvatore = ? WHERE id_voce = ?");
+                $stmt_app->execute([$_SESSION['user_id'], $id_da_approvare]);
+                $redirect_id = $id_da_approvare;
+            }
+
+            $conn->commit();
+            header("Location: voce.php?id=$redirect_id&msg=approved");
+            exit();
+        }
+    } catch (Exception $e) {
+        $conn->rollBack();
+        $errore = "Errore approvazione: " . $e->getMessage();
+    }
+}
+
+// Eseguiamo query specifiche per tipo per risolvere le relazioni (JOIN)
 switch ($tipo) {
     case 'missione':
         $query_dettagli = "SELECT m.*, 
@@ -73,6 +165,7 @@ switch ($tipo) {
         break;
 
     case 'astronauta':
+        // Se avessi una tabella per le nazioni, faresti un altro join qui
         $query_dettagli = "SELECT * FROM astronauta WHERE id_voce = ?";
         break;
 
@@ -87,6 +180,8 @@ switch ($tipo) {
         $query_dettagli = "SELECT * FROM $tipo WHERE id_voce = ?";
         break;
 }
+
+
 // Controllo se è stata richiesta la modalità modifica
 $edit_mode = isset($_POST['enable_edit']);
 if (!isset($_SESSION["user_id"]) && $edit_mode) {
@@ -94,62 +189,106 @@ if (!isset($_SESSION["user_id"]) && $edit_mode) {
     exit();
 }
 
-// Logica di Salvataggio -> se salvata la voce dopo modifica
+// Logica di Salvataggio
 if (isset($_POST['save_voce'])) {
     try {
         $conn->beginTransaction();
-        $id_voce = $_GET['id'];
+        $id_voce_attuale = $_GET['id'];
+        // Assicurati che 'ruolo' sia salvato in sessione al login
+        $is_admin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN');
 
-        // 1. Aggiornamento Tabella Voce
-        $stmt_v = $conn->prepare("UPDATE voce SET nome = ?, immagine_url = ? WHERE id_voce = ?"); // 'immagine_url' è il nome della colonna nel DB, urli è il nome del campo nel form
-        $stmt_v->execute([$_POST['nome_voce'], $_POST['immagine_url'], $id_voce]);
+        if ($is_admin) {
+            // --- LOGICA ADMIN: SOVRASCRIVE DIRETTAMENTE ---
+            $stmt_v = $conn->prepare("UPDATE voce SET nome = ?, immagine_url = ?, stato = 'APPROVATA', approvatore = ? WHERE id_voce = ?");
+            $stmt_v->execute([$_POST['nome_voce'], $_POST['immagine_url'], $_SESSION['user_id'], $id_voce_attuale]);
 
-        // 2. Aggiornamento Tabella Specifica
-        $campi_esclusi = [
-            'save_voce',
-            'nome_voce',
-            'immagine_url',
-            'data_lancio',
-            'ora_lancio',
-            'luogo_lancio',
-            'pianeta_lancio' // Escludiamo i campi dell'"evento" dal ciclo automatico, così da gestirli separatamente dopo
-        ];
+            $campi_esclusi = ['save_voce', 'nome_voce', 'immagine_url', 'data_lancio', 'ora_lancio', 'luogo_lancio', 'pianeta_lancio'];
+            $update_parts = [];
+            $params = [];
 
-        $update_parts = []; // array che conterrà le parti della query di update
-        $params = []; // array che conterrà i valori da bindare alla query di update, così da evitare problemi di SQL injection e formattazione
-
-        foreach ($_POST as $key => $value) {
-            if (!in_array($key, $campi_esclusi) && strpos($key, 'nome_') !== 0 && strpos($key, 'azienda_') !== 0) {
-                $update_parts[] = "$key = ?";
-                $params[] = ($value === '') ? null : $value;
+            foreach ($_POST as $key => $value) {
+                if (!in_array($key, $campi_esclusi) && strpos($key, 'nome_') !== 0 && strpos($key, 'azienda_') !== 0) {
+                    $update_parts[] = "$key = ?";
+                    $params[] = ($value === '') ? null : $value;
+                }
             }
-        }
 
-        if (!empty($update_parts)) {
-            $sql_spec = "UPDATE $tipo SET " . implode(', ', $update_parts) . " WHERE id_voce = ?";
-            $params[] = $id_voce;
-            $stmt_s = $conn->prepare($sql_spec);
-            $stmt_s->execute($params);
-        }
+            if (!empty($update_parts)) {
+                $sql_spec = "UPDATE $tipo SET " . implode(', ', $update_parts) . " WHERE id_voce = ?";
+                $params[] = $id_voce_attuale;
+                $stmt_s = $conn->prepare($sql_spec);
+                $stmt_s->execute($params);
+            }
 
-        // 3. Aggiornamento Tabella Evento (se è una missione)
-        if ($tipo === 'missione' && !empty($dettagli['id_lancio'])) {
-            $stmt_e = $conn->prepare("UPDATE evento SET data = ?, ora = ?, luogo = ?, pianeta = ? WHERE id_voce = ?");
-            $stmt_e->execute([
-                $_POST['data_lancio'] ?? null,
-                $_POST['ora_lancio'] ?? null,
-                $_POST['luogo_lancio'] ?? null,
-                $_POST['pianeta_lancio'] ?? null,
-                $dettagli['id_lancio']
-            ]);
-        }
+            if ($tipo === 'missione' && !empty($dettagli['id_lancio'])) {
+                $stmt_e = $conn->prepare("UPDATE evento SET data = ?, ora = ?, luogo = ?, pianeta = ? WHERE id_voce = ?");
+                $stmt_e->execute([
+                    $_POST['data_lancio'] ?? null,
+                    $_POST['ora_lancio'] ?? null,
+                    $_POST['luogo_lancio'] ?? null,
+                    $_POST['pianeta_lancio'] ?? null,
+                    $dettagli['id_lancio']
+                ]);
+            }
 
-        $conn->commit();
-        header("Location: voce.php?id=$id_voce&msg=success");
-        exit();
+            $conn->commit();
+            header("Location: voce.php?id=$id_voce_attuale&msg=success");
+            exit();
+
+        } else {
+            // --- LOGICA UTENTE: CREA UNA REVISIONE (COPIA IN ATTESA) ---
+
+            // 1. Inserimento in 'voce' come record in attesa legato all'originale
+            $stmt_rev = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url, id_originale) VALUES (?, ?, ?, 'IN_ATTESA', ?, ?)");
+            $stmt_rev->execute([$_POST['nome_voce'], $tipo, $_SESSION['user_id'], $_POST['immagine_url'], $id_voce_attuale]);
+            $nuovo_id_revisione = $conn->lastInsertId();
+
+            // 2. Lettura dinamica delle colonne per evitare l'errore SQL "Unknown column"
+            $q_colonne = $conn->query("DESCRIBE $tipo");
+            $colonne_reali = $q_colonne->fetchAll(PDO::FETCH_COLUMN);
+
+            $colonne = ['id_voce'];
+            $placeholders = ['?'];
+            $params = [$nuovo_id_revisione];
+
+            foreach ($_POST as $key => $value) {
+                // Inserisce il dato SOLO se la colonna esiste davvero nella tabella specifica (es. 'azienda')
+                if (in_array($key, $colonne_reali) && $key !== 'id_voce') {
+                    $colonne[] = $key;
+                    $placeholders[] = "?";
+                    $params[] = ($value === '') ? null : $value;
+                }
+            }
+
+            $sql_ins = "INSERT INTO $tipo (" . implode(', ', $colonne) . ") VALUES (" . implode(', ', $placeholders) . ")";
+            $stmt_ins = $conn->prepare($sql_ins);
+            $stmt_ins->execute($params);
+
+            // 3. Gestione Evento di Lancio (se è una missione)
+            if ($tipo === 'missione') {
+                $stmt_ev_rev = $conn->prepare("INSERT INTO evento (nome, data, ora, luogo, pianeta, id_voce_revisione) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt_ev_rev->execute([
+                    "Revisione: " . $_POST['nome_voce'],
+                    $_POST['data_lancio'] ?? null,
+                    $_POST['ora_lancio'] ?? null,
+                    $_POST['luogo_lancio'] ?? null,
+                    $_POST['pianeta_lancio'] ?? null,
+                    $nuovo_id_revisione
+                ]);
+
+                $id_nuovo_evento = $conn->lastInsertId();
+                $stmt_up_miss = $conn->prepare("UPDATE missione SET id_lancio = ? WHERE id_voce = ?");
+                $stmt_up_miss->execute([$id_nuovo_evento, $nuovo_id_revisione]);
+            }
+
+            $conn->commit();
+            header("Location: ricerca.php?msg=pending");
+            exit();
+        }
 
     } catch (Exception $e) {
-        $conn->rollBack();
+        if ($conn->inTransaction())
+            $conn->rollBack();
         $errore = "Errore durante il salvataggio: " . $e->getMessage();
         $edit_mode = true;
     }
@@ -182,6 +321,12 @@ $dettagli = $stmt_det->fetch(PDO::FETCH_ASSOC);
     </header>
 
     <div class="container">
+        <?php if (!empty($errore)): ?>
+            <div
+                style="background: #ff4d4d; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold;">
+                <?= htmlspecialchars($errore) ?>
+            </div>
+        <?php endif; ?>
         <form method="post" style="border: 0px solid #ccc; margin-top: 0px;">
             <?php if ($edit_mode): ?>
                 <input type="text" name="nome_voce" value="<?= htmlspecialchars($voce['nome_voce']) ?>" class="edit-title">
@@ -270,18 +415,31 @@ $dettagli = $stmt_det->fetch(PDO::FETCH_ASSOC);
                         </div>
                     <?php endforeach; ?>
                 </div>
-            </div>
 
-            <div class="actions">
-                <?php if ($edit_mode): ?>
-                    <button type="submit" name="save_voce" class="btn-green">Salva Modifiche</button>
-                    <a href="voce.php?id=<?= $id ?>" class="btn-gray">Annulla</a>
-                <?php else: ?>
-                    <button type="submit" name="enable_edit" class="btn-blue"
-                        style="background-color: #11e4ff; color: black; font-weight: bold;">✎ Modifica Voce</button>
-                    <a href="index.php">Torna alla Home</a>
-                <?php endif; ?>
-            </div>
+                <div class="actions">
+                    <div class="actions">
+                        <?php if ($edit_mode): ?>
+                            <button type="submit" name="save_voce" class="btn-green">Salva Modifiche</button>
+                            <a href="voce.php?id=<?= $id ?>" class="btn-gray">Annulla</a>
+                        <?php else: ?>
+                            <button type="submit" name="enable_edit" class="btn-blue"
+                                style="background-color: #11e4ff; color: black; font-weight: bold;">✎ Modifica Voce</button>
+
+                            <a href="index.php" class="btn-gray" style="text-decoration:none;">Torna alla Home</a>
+
+                            <?php if (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN'): ?>
+                                <form method="POST" style="display:inline; margin:0; padding:0; border:none;"
+                                    onsubmit="return confirm('ATTENZIONE: Questa azione eliminerà definitivamente la voce e tutti i suoi dati dal database. Procedere?');">
+                                    <button type="submit" name="elimina_definitivamente" class="btn-red"
+                                        style="background: #ff4d4d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px;">
+                                        🗑️ Elimina Definitivamente
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+
+                        <?php endif; ?>
+                    </div>
+                </div>
         </form>
 
         <?php if ($voce['approvatore_name']): ?>
@@ -299,6 +457,34 @@ $dettagli = $stmt_det->fetch(PDO::FETCH_ASSOC);
                 </div>
             <?php endif; ?>
         </div>
+        <?php if (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN' && $voce['stato'] === 'IN_ATTESA'): ?>
+            <div
+                style="background: rgba(17, 228, 255, 0.1); padding: 20px; border: 2px solid #11e4ff; margin-bottom: 30px; border-radius: 8px;">
+                <h3 style="color: #11e4ff; margin-top:0;">🛡️ Pannello di Revisione</h3>
+                <p>Stai valutando:
+                    <strong><?= !empty($voce['id_originale']) ? 'UNA MODIFICA' : 'UN NUOVO INSERIMENTO' ?></strong>.
+                </p>.
+                </p>
+
+                <form method="POST" style="display: flex; gap: 10px;">
+                    <input type="hidden" name="id_voce_approva" value="<?= $id ?>">
+
+                    <button type="submit" name="approva_voce" class="btn-green"
+                        style="padding: 10px 20px; cursor: pointer;">
+                        ✅ APPROVA E PUBBLICA
+                    </button>
+
+                    <button type="submit" name="rifiuta_voce" class="btn-red"
+                        style="background: #ff4d4d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;"
+                        onclick="return confirm('Sei sicuro di voler rifiutare e cancellare questa proposta?');">
+                        ❌ RIFIUTA PROPOSTA
+                    </button>
+
+                    <a href="admin.php" class="btn-gray" style="text-decoration:none; padding: 10px 15px;">Torna alla
+                        lista</a>
+                </form>
+            </div>
+        <?php endif; ?>
     </div>
     <br>
 </body>

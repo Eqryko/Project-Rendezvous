@@ -1,46 +1,33 @@
 <?php
 // admin.php
 session_start();
+require "config.php"; // Assicurati che config.php definisca $conn come oggetto PDO
 
-/*
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+// 1. Controllo Accesso
+if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-*/
-if(!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+
+// 2. Verifica Ruolo Admin (Usando PDO come nelle altre pagine)
+$userId = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT ruolo FROM utente WHERE id_utente = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user || $user['ruolo'] !== 'ADMIN') {
+    header("Location: index.php"); // Reindirizza alla home se non è admin
     exit();
-}else{
-    require "config.php";
-
-    $conn = new mysqli($host, $user, $pass, $db);
-
-    if ($conn->connect_error) {
-        die("Connessione fallita.");
-    }
-
-    // Verifica se l'utente è un admin
-    $userId = $_SESSION['user_id'];
-    $sql = "SELECT ruolo FROM utente WHERE id_utente = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        if ($row['ruolo'] !== 'ADMIN') {
-            header("Location: admin.php");
-            exit();
-        }
-    } else {
-    
-    }
-
-    $stmt->close();
-    $conn->close();
 }
+
+// 3. Recupero Voci in Attesa
+// Selezioniamo anche id_originale per capire se è una nuova voce o una modifica
+$query_attesa = "SELECT v.*, u.username 
+                 FROM voce v 
+                 JOIN utente u ON v.creatore = u.id_utente 
+                 WHERE v.stato = 'IN_ATTESA' 
+                 ORDER BY v.data_creazione DESC";
+$voci_attesa = $conn->query($query_attesa)->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -48,31 +35,92 @@ if(!isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-
-    <link rel="stylesheet" href="styles/rstyle.css">
+    <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/nav_style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #11e4ff;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(17, 228, 255, 0.2);
+        }
+
+        .badge-modifica {
+            background: #ffae00;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .badge-nuova {
+            background: #00ff88;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+    </style>
 </head>
 <body>
-    <img class="logo" src="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
-    <header>
+    <header class="Nav">
         <a href="index.php" class="toggle-link">Home</a>
-        <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
-        <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
-        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
+        <a href="profilo.php" class="toggle-link">Profile</a>
+        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank">Repository</a>
     </header>
 
-    <br><br><br><br>
-    <div class="container">
-        <h1>Benvenuto, Admin!</h1>
-        <p>Qui puoi gestire le voci e gli utenti del tuo sito.</p>
-    </div>
+    <div class="container" style="margin-top: 80px;">
+        <h1>Dashboard Amministratore</h1>
+        <h2>Voci in attesa di approvazione</h2>
 
-    <footer>
-        <p id="usage"></p>
-        <i> Credits: <br>
-            Refosco Enrico - enricoorefosco@gmail.com <br>
-            Munaro Alex - alexmunaro22@gmail.com
-        </i> <br>
-    </footer>
+        <?php if (empty($voci_attesa)): ?>
+            <p>Non ci sono voci in attesa di revisione.</p>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Nome</th>
+                        <th>Autore</th>
+                        <th>Tipo Richiesta</th>
+                        <th>Azione</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($voci_attesa as $v): ?>
+                        <tr>
+                            <td><?= strtoupper($v['tipo']) ?></td>
+                            <td><?= htmlspecialchars($v['nome']) ?></td>
+                            <td><?= htmlspecialchars($v['username']) ?></td>
+                            <td>
+                                <?php if ($v['id_originale']): ?>
+                                    <span class="badge-modifica">MODIFICA</span>
+                                <?php else: ?>
+                                    <span class="badge-nuova">NUOVA VOCE</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a href="voce.php?id=<?= $v['id_voce'] ?>&admin_review=1" class="btn-blue"
+                                    style="background: #11e4ff; color: black; padding: 5px 10px; text-decoration: none; font-weight: bold;">
+                                    🔍 Esamina
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</body>
 </html>
