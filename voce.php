@@ -86,6 +86,10 @@ switch ($tipo) {
 }
 // Controllo se è stata richiesta la modalità modifica
 $edit_mode = isset($_POST['enable_edit']);
+if (!isset($_SESSION["user_id"]) && $edit_mode) {
+    header("Location: login.php");
+    exit();
+}
 
 // Logica di Salvataggio
 if (isset($_POST['save_voce'])) {
@@ -99,7 +103,6 @@ if (isset($_POST['save_voce'])) {
         $stmt_v->execute([$_POST['nome_voce'], $_POST['immagine_url'], $id_voce]);
 
         // 2. Aggiornamento Tabella Specifica
-        // 2. Aggiornamento Tabella Specifica (Missione/Astronauta etc)
         $campi_esclusi = [
             'save_voce',
             'nome_voce',
