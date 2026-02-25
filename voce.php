@@ -1,9 +1,12 @@
 <?php
+// voce.php
+// file + grande
 session_start();
+
 $id = $_GET['id'] ?? null;
 require "config.php";
 
-// 1. Recupero i dati base dalla tabella 'voce' includendo il campo 'tipo'
+// 1. Recupero dati base dalla tabella 'voce'
 $query = "SELECT v.nome AS nome_voce, 
                  v.tipo, 
                  v.stato, 
@@ -35,6 +38,7 @@ function generaSelect($nome_campo, $valore_attuale, $lista)
     }
     echo "</select>";
 }
+
 $stmt = $conn->prepare($query);
 $stmt->execute([$id]);
 $voce = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -43,11 +47,11 @@ if (!$voce) {
     die("Errore: Voce non trovata.");
 }
 
-// 2. Recupero i dettagli specifici in base al tipo
+// 2. Recupero dettagli specifici in base al tipo
 $tipo = $voce['tipo'];
 $dettagli = null;
 
-// Eseguiamo query specifiche per tipo per risolvere le relazioni (JOIN)
+// risoluzione relazioni
 switch ($tipo) {
     case 'missione':
         $query_dettagli = "SELECT m.*, 
@@ -69,7 +73,6 @@ switch ($tipo) {
         break;
 
     case 'astronauta':
-        // Se avessi una tabella per le nazioni, faresti un altro join qui
         $query_dettagli = "SELECT * FROM astronauta WHERE id_voce = ?";
         break;
 
@@ -91,15 +94,14 @@ if (!isset($_SESSION["user_id"]) && $edit_mode) {
     exit();
 }
 
-// Logica di Salvataggio
+// Logica di Salvataggio -> se salvata la voce dopo modifica
 if (isset($_POST['save_voce'])) {
     try {
         $conn->beginTransaction();
         $id_voce = $_GET['id'];
 
         // 1. Aggiornamento Tabella Voce
-        // Nota: ho usato 'immagine_url' che è il nome reale della colonna nel DB
-        $stmt_v = $conn->prepare("UPDATE voce SET nome = ?, immagine_url = ? WHERE id_voce = ?");
+        $stmt_v = $conn->prepare("UPDATE voce SET nome = ?, immagine_url = ? WHERE id_voce = ?"); // 'immagine_url' è il nome della colonna nel DB, urli è il nome del campo nel form
         $stmt_v->execute([$_POST['nome_voce'], $_POST['immagine_url'], $id_voce]);
 
         // 2. Aggiornamento Tabella Specifica
@@ -110,11 +112,11 @@ if (isset($_POST['save_voce'])) {
             'data_lancio',
             'ora_lancio',
             'luogo_lancio',
-            'pianeta_lancio' // Escludiamo i campi dell'evento dal ciclo automatico
+            'pianeta_lancio' // Escludiamo i campi dell'"evento" dal ciclo automatico, così da gestirli separatamente dopo
         ];
 
-        $update_parts = [];
-        $params = [];
+        $update_parts = []; // array che conterrà le parti della query di update
+        $params = []; // array che conterrà i valori da bindare alla query di update, così da evitare problemi di SQL injection e formattazione
 
         foreach ($_POST as $key => $value) {
             if (!in_array($key, $campi_esclusi) && strpos($key, 'nome_') !== 0 && strpos($key, 'azienda_') !== 0) {
@@ -130,7 +132,7 @@ if (isset($_POST['save_voce'])) {
             $stmt_s->execute($params);
         }
 
-        // 3. NUOVO: Aggiornamento Tabella Evento (se è una missione)
+        // 3. Aggiornamento Tabella Evento (se è una missione)
         if ($tipo === 'missione' && !empty($dettagli['id_lancio'])) {
             $stmt_e = $conn->prepare("UPDATE evento SET data = ?, ora = ?, luogo = ?, pianeta = ? WHERE id_voce = ?");
             $stmt_e->execute([

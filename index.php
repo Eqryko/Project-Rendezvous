@@ -9,6 +9,7 @@ PROJECT RENDEZVOUS
 -->
 
 <?php
+// index.php
     session_start();
 ?>
 

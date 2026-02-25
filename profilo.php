@@ -1,7 +1,9 @@
 <?php
+// profilo.php
 session_start();
 require "config.php";
 
+// Se non loggato, torna a login
 if (!isset($_SESSION["user_id"])) {
     header("Location: login.php");
     exit();
@@ -11,12 +13,14 @@ $messaggio = "";
 $errore = "";
 $edit_mode = isset($_POST['enable_edit']);
 
+// logout
 if (isset($_POST['logout'])) {
     session_destroy();
     header("Location: login.php");
     exit();
 }
 
+// Salvataggio modifiche profilo
 if (isset($_POST['save_profile'])) {
     $user_id = $_SESSION["user_id"];
     $nuovo_username = trim($_POST['username']);

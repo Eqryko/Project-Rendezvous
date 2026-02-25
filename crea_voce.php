@@ -1,9 +1,11 @@
 <?php
+// crea_voce.php
+
 session_start();
 require "config.php";
 
 // Recupero elenchi per i menu a tendina
-$aziende = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'azienda'")->fetchAll(PDO::FETCH_ASSOC);
+$aziende = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'azienda'")->fetchAll(PDO::FETCH_ASSOC); // fetchAll per ottenere un array completo di x
 $programmi = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'programma'")->fetchAll(PDO::FETCH_ASSOC);
 $vettori = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'vettore'")->fetchAll(PDO::FETCH_ASSOC);
 $veicoli = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'veicolo'")->fetchAll(PDO::FETCH_ASSOC);
@@ -23,11 +25,13 @@ if (!isset($_SESSION['user_id'])) {
     die("Devi effettuare il login per creare una voce.");
 }
 
+// Gestione del form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
     $tipo = $_POST['tipo'];
     $id_creatore = $_SESSION['id_utente'];
 
+    // Validazione base
     try {
         $conn->beginTransaction();
 
@@ -69,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         }
 
+        // Esecuzione dell'inserimento specifico
         if (isset($sql)) {
             $stmt_det = $conn->prepare($sql);
             $stmt_det->execute($params);

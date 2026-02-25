@@ -1,10 +1,7 @@
 <?php
+// ricerca.php
 session_start();
-// --- CONFIGURAZIONE DATABASE ---
-$host = "localhost";
-$user = "root";
-$password = "";
-$db_name = "astronauticadb";
+require "config.php";
 
 $conn = new mysqli($host, $user, $password, $db_name);
 
