@@ -1,99 +1,149 @@
-html {
-    max-width: 100%;
-}
-
-html,
-body {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+/* --- BASE & THEME --- */
+:root {
+    --bg: #0a0a0a;
+    --accent: #11e4ff;
+    --text-dim: #666;
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 body {
-    background-color: #3d3d3d;
-    font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
+    background-color: var(--bg);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
     margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    position: relative;
-    z-index: 1;
+    -webkit-font-smoothing: antialiased;
 }
 
+/* --- ANIMAZIONE REVEAL --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
 
+/* --- LAYOUT --- */
 .Main1 {
-    flex: 1;
-    margin-left: 5%;
-    margin-right: 5%;
-    padding: 60px 20px 40px 20px;
-    box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 24px;
 }
 
-.Main1 h2, .Main1 p {
-    color: rgb(255, 255, 255);
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 20px;
-}
-
-th,
-td {
-    border: 1px solid #817f7f;
-    padding: 12px;
-    text-align: left;
-    color: white;
-}
-
-th {
-    background-color: #3d3d3d;
-    color: white;
-}
-
-input {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.Main1 h2 {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
     margin-bottom: 10px;
 }
 
-/* Stile per il link */
+.Main1 p {
+    color: var(--text-dim);
+    font-size: 1rem;
+    margin-bottom: 60px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+/* --- SEARCH INPUT EDITORIAL --- */
+.search-container {
+    position: relative;
+    margin-bottom: 80px;
+    border-bottom: 2px solid #222;
+    transition: border-color 0.4s;
+}
+
+.search-container:focus-within {
+    border-color: var(--accent);
+}
+
+input#cercaNome {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    padding: 20px 0;
+    width: 100%;
+    outline: none;
+    letter-spacing: -0.02em;
+}
+
+input#cercaNome::placeholder {
+    color: #222;
+}
+
+/* --- TABLE / DIRECTORY --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+th {
+    text-align: left;
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    padding: 20px 0;
+    border-bottom: 1px solid #222;
+}
+
+td {
+    padding: 30px 0;
+    border-bottom: 1px solid #111;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+tr:hover td {
+    color: var(--accent);
+}
+
+/* Link nella tabella */
 td a {
-    color: #007bff;
+    color: #fff;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    transition: color 0.3s;
 }
 
-td a:hover {
-    text-decoration: underline;
-    color: #0056b3;
+tr:hover td a {
+    color: var(--accent);
 }
 
+/* Button Crea Voce */
 #creavoce {
-    color: white;
-    border-radius: 30px;
-    margin-left: 800px;
-    padding: 8px 30px;
-    transition: all 0.3s ease;
-    font-size: 20px;
+    display: inline-block;
+    background: #fff;
+    color: #000;
+    padding: 15px 30px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    float: right;
+    margin-top: -120px;
+    transition: all 0.3s;
 }
-
-
 
 #creavoce:hover {
-    color: white;
-    text-shadow: 0 0 15px #d5e4e6, 0 0 30px #ffffff;
-    text-decoration: none;
+    background: var(--accent);
+    transform: translateY(-5px);
 }
 
-.Main,
-footer,
-form,
-h1,
-h2,
-p {
-    position: relative;
-    z-index: 2;
+footer {
+    padding: 60px 24px;
+    color: #333;
+    font-size: 0.8rem;
+    border-top: 1px solid #111;
 }
