@@ -139,33 +139,33 @@
         <p>Seleziona una categoria per iniziare la navigazione nel database:</p>
 
         <div class="stats-container">
-            <div class="stat-card">
-                <strong>MISSIONI</strong>
-                <span>Esplorazioni & Eventi</span>
-            </div>
-            <div class="stat-card">
-                <strong>ASTRONAUTI</strong>
-                <span>Equipaggi & Biografìe</span>
-            </div>
-            <div class="stat-card">
-                <strong>TECNOLOGIA</strong>
-                <span>Vettori & Veicoli</span>
-            </div>
-            <div class="stat-card">
-                <strong>AZIENDE</strong>
-                <span>Agenzie & Partner</span>
-            </div>
-        </div>
+    <div class="stat-card" onclick="window.location.href='ricerca.php?tipo=MISSIONE'" style="cursor: pointer;">
+        <strong>MISSIONI</strong>
+        <p>Esplorazioni & Eventi</p>
+    </div>
+    <div class="stat-card" onclick="window.location.href='ricerca.php?tipo=ASTRONAUTA'" style="cursor: pointer;">
+        <strong>ASTRONAUTI</strong>
+        <p>Equipaggi & Biografìe</p>
+    </div>
+    <div class="stat-card" onclick="window.location.href='ricerca.php?tipo=VETTORE VEICOLO'" style="cursor: pointer;">
+        <strong>TECNOLOGIA</strong>
+        <p>Vettori & Veicoli</p>
+    </div>
+    <div class="stat-card" onclick="window.location.href='ricerca.php?tipo=AZIENDA'" style="cursor: pointer;">
+        <strong>AZIENDE</strong>
+        <p>Agenzie & Partner</p>
+    </div>
+</div>
 
         <div class="btn-container">
             <a href="ricerca.php" class="btn-action">Accedi al Catalogo Completo</a>
             <?php if(isset($_SESSION['user_id'])): ?>
-                <a href="crea_voce.php" class="btn-action" style="border-color: #fff; color: #fff;">Contribuisci all'Archivio</a>
+                <a href="crea_voce.php" class="btn-action">Contribuisci all'Archivio</a>
             <?php endif; ?>
         </div>
-
-        <?php if(isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN'): ?>
-            <a href="admin.php" class="admin-link">PANNELLO DI CONTROLLO AMMINISTRATIVO</a>
+                <br>
+        <?php if(isset($_SESSION['ruolo'])): ?>
+            <a href="admin.php" class="btn-action">PANNELLO DI CONTROLLO AMMINISTRATIVO</a>
         <?php endif; ?>
     </div>
 

@@ -3,6 +3,7 @@
 session_start();
 require "config.php";
 
+// Connessione mysqli come da tuo setup
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
@@ -11,16 +12,38 @@ if ($conn->connect_error) {
 
 // --- LOGICA DI RICERCA AJAX ---
 if (isset($_GET['ajax'])) {
-    $nome = isset($_GET['nome']) ? $_GET['nome'] : '';
+    $input = isset($_GET['nome']) ? trim($_GET['nome']) : '';
 
-    if (empty($nome)) {
+    if (empty($input)) {
         $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA'";
         $stmt = $conn->prepare($sql);
     } else {
-        $sql = "SELECT * FROM voce WHERE nome LIKE ? AND stato = 'APPROVATA'";
+        // Logica esclusiva: separiamo le parole per cercare in AND/OR
+        // Gestiamo il caso specifico "VETTOREVEICOLO" splittandolo
+        $input_pulito = str_replace("VETTOREVEICOLO", "VETTORE VEICOLO", strtoupper($input));
+        $termini = explode(" ", $input_pulito);
+        $termini = array_filter($termini); 
+
+        $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA' AND (";
+        $condizioni = [];
+        $params = [];
+        $types = "";
+
+        foreach ($termini as $termine) {
+            // Cerchiamo il termine sia nel nome che nel tipo
+            $condizioni[] = "(nome LIKE ? OR tipo LIKE ?)";
+            $cerca = "%$termine%";
+            $params[] = $cerca;
+            $params[] = $cerca;
+            $types .= "ss";
+        }
+
+        $sql .= implode(" OR ", $condizioni) . ")";
         $stmt = $conn->prepare($sql);
-        $param = "%$nome%";
-        $stmt->bind_param("s", $param);
+        
+        if ($types) {
+            $stmt->bind_param($types, ...$params);
+        }
     }
 
     $stmt->execute();
@@ -28,19 +51,20 @@ if (isset($_GET['ajax'])) {
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            // Creazione del link dinamico con l'ID
             $id = $row['id_voce'];
             $nome_pulito = htmlspecialchars($row['nome']);
+            $tipo_pulito = htmlspecialchars($row['tipo']);
 
             echo "<tr>
                     <td>{$id}</td>
                     <td>
                         <a href='voce.php?id={$id}'>{$nome_pulito}</a>
                     </td>
+                    <td>{$tipo_pulito}</td>
                   </tr>";
         }
     } else {
-        echo "<tr><td colspan='2'>Nessun risultato trovato.</td></tr>";
+        echo "<tr><td colspan='3'>Nessun risultato trovato.</td></tr>";
     }
 
     $stmt->close();
@@ -54,7 +78,6 @@ if (isset($_GET['ajax'])) {
 <head>
     <meta charset="UTF-8">
     <title>Ricerca Live</title>
-
     <link rel="stylesheet" href="styles/rstyle.css">
     <link rel="stylesheet" href="styles/nav_style.css">
 </head>
@@ -75,7 +98,7 @@ if (isset($_GET['ajax'])) {
         <h2>Gestione Voci</h2>
         <p>Digita per filtrare. Clicca sul nome per vedere i dettagli.</p>
 
-        <input type="text" id="cercaNome" placeholder="Cerca una voce..." oninput="caricaDati()">
+        <input type="text" id="cercaNome" placeholder="Cerca una voce o un tipo..." oninput="caricaDati()">
         <a href="crea_voce.php" class="toggle-link" target="_blank" id="creavoce">Crea voce</a>
 
 
@@ -84,6 +107,7 @@ if (isset($_GET['ajax'])) {
                 <tr>
                     <th>ID</th>
                     <th>Nome (Clicca per dettagli)</th>
+                    <th>Tipo</th>
                 </tr>
             </thead>
             <tbody id="corpoTabella">
@@ -103,8 +127,17 @@ if (isset($_GET['ajax'])) {
                     .catch(error => console.error('Errore durante la ricerca:', error));
             }
 
-            // Caricamento iniziale
-            window.onload = caricaDati;
+            // Gestione automatica del parametro proveniente dalle stat-cards
+            window.onload = function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const tipoQuery = urlParams.get('tipo');
+
+                if (tipoQuery) {
+                    document.getElementById('cercaNome').value = tipoQuery;
+                }
+                
+                caricaDati();
+            };
         </script>
     </div>
     <footer>
