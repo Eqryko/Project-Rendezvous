@@ -67,6 +67,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 break;
 
             case 'missione':
+                // 2a. Prima creiamo l'evento di lancio correlato
+                $stmt_ev = $conn->prepare("INSERT INTO evento (nome, data, ora, luogo, pianeta) VALUES (?, ?, ?, ?, ?)");
+                $nome_evento = "Lancio di " . $nome;
+                $stmt_ev->execute([
+                    $nome_evento,
+                    emptyToNull($_POST['miss_data_lancio']),
+                    emptyToNull($_POST['miss_ora_lancio']),
+                    emptyToNull($_POST['miss_luogo_lancio']),
+                    emptyToNull($_POST['miss_pianeta_lancio'] ?? 'Terra')
+                ]);
+                $id_lancio_generato = $conn->lastInsertId();
+
+                // 2b. Poi inseriamo la missione usando l'ID dell'evento appena creato
                 $sql = "INSERT INTO missione (id_voce, cospar_id, nome, tipo, destinazione, esito, id_azienda, id_programma, id_vettore, id_veicolo, id_lancio) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $params = [
@@ -80,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     emptyToNull($_POST['miss_programma']),
                     emptyToNull($_POST['miss_vettore']),
                     emptyToNull($_POST['miss_veicolo']),
-                    emptyToNull($_POST['miss_lancio'])
+                    $id_lancio_generato // Collega l'evento creato sopra
                 ];
                 break;
         }
@@ -108,8 +121,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
     <title>Crea Nuova Voce</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
+    <meta name="author" content="Refosco Enrico, Munaro Alex">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/nav_style.css">
     <style>
@@ -202,13 +218,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h3>Dettagli Missione</h3>
 
                 <label>COSPAR ID:</label>
-                <input type="text" name="miss_cospar">
+                <input type="text" name="miss_cospar" placeholder="Es: 1969-059A">
 
                 <label>Tipo Missione:</label>
                 <input type="text" name="miss_tipo" placeholder="Es: Esplorazione lunare">
 
                 <label>Destinazione:</label>
-                <input type="text" name="miss_dest">
+                <input type="text" name="miss_dest" placeholder="Es: Luna, Marte, LEO">
 
                 <label>Esito:</label>
                 <select name="miss_esito">
@@ -217,7 +233,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <option value="Parziale">Parziale</option>
                 </select>
 
-                <hr> <label>Azienda Responsabile:</label>
+                <div style="background: rgba(17, 228, 255, 0.1); padding: 15px; border-radius: 5px; margin-top: 15px;">
+                    <h4 style="color: #11e4ff; margin-top: 0;">🚀 Dettagli Lancio (Evento)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Data Lancio:</label>
+                            <input type="date" name="miss_data_lancio">
+                        </div>
+                        <div>
+                            <label>Ora Lancio:</label>
+                            <input type="time" name="miss_ora_lancio">
+                        </div>
+                    </div>
+                    <label>Luogo di Lancio:</label>
+                    <input type="text" name="miss_luogo_lancio" placeholder="Es: Kennedy Space Center, Pad 39A">
+
+                    <label>Pianeta di Partenza:</label>
+                    <input type="text" name="miss_pianeta_lancio" value="Terra">
+                </div>
+
+                <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #11e4ff;">
+
+                <label>Azienda Responsabile:</label>
                 <select name="miss_azienda">
                     <option value="">-- Nessuna / Sconosciuta --</option>
                     <?php foreach ($aziende as $az): ?>
@@ -253,16 +290,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php foreach ($veicoli as $vc): ?>
                         <option value="<?= $vc['id_voce'] ?>">
                             <?= htmlspecialchars($vc['nome']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <label>Evento di Lancio:</label>
-                <select name="miss_lancio">
-                    <option value="">-- Seleziona Evento --</option>
-                    <?php foreach ($lanci as $ln): ?>
-                        <option value="<?= $ln['id_voce'] ?>">
-                            <?= htmlspecialchars($ln['nome']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
