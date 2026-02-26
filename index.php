@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/nav_style.css">
     <script src="scripts/script.js" defer></script>
+    <script src="assets/revealOnScroll.js" defer></script>
 </head>
 
 <body>
@@ -47,7 +48,7 @@
         <div class="project-description reveal">
             <p style="color: var(--accent); font-family: monospace; font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;">The Mission</p>
             <p style="font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 500; line-height: 1.2; margin-top: 15px;">
-                Un'infrastruttura digitale progettata per mappare l'eredità tecnologica dell'umanità nello spazio profondo.
+                A digital infrastructure designed to map humanity's technological legacy in deep space.
             </p>
         </div>
 
@@ -83,6 +84,7 @@
     </div>
 
     <footer>
+        <p>All rights reserved</p>
         <p id="usage"></p>
         <!-- DA AGGIUNGERE
          all rights reserved
@@ -93,31 +95,5 @@
             Refosco Enrico & Munaro Alex
         </i>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: "0px 0px -50px 0px"
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, observerOptions);
-
-            const elements = document.querySelectorAll('.reveal');
-            elements.forEach((el, index) => {
-                // Se sono card della grid, aggiunge un ritardo "staggered"
-                if(el.classList.contains('stat-card')) {
-                    el.style.transitionDelay = `${(index % 4) * 0.15}s`;
-                }
-                observer.observe(el);
-            });
-        });
-    </script>
 </body>
 </html>

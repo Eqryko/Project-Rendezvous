@@ -1,7 +1,7 @@
 <?php
 // ricerca.php
 session_start();
-require "config.php";
+require "assets/config.php";
 
 $conn = new mysqli($host, $user, $pass, $db);
 

@@ -1,14 +1,14 @@
 <?php
 // login.php
 session_start();
-require "config.php";
+require "../assets/config.php";
 
 // Imposto timezone per coerenza con database
 date_default_timezone_set("Europe/Rome");
 
 // Se utente già loggato, reindirizzo a profilo
 if (isset($_SESSION["user_id"])) {
-    header("Location: profilo.php");
+    header("Location: ../profilo.php");
     exit();
 }
 // Variabili per messaggi di feedback
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["data_registrazione"] = $user["data_registrazione"];
             
             // Reindirizzo a profilo dopo login
-            header("Location: profilo.php");
+            header("Location: ../profilo.php");
             exit();
         } else {
             $errore = "STATUS_DENIED: Credenziali errate.";
@@ -97,8 +97,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
     
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/nav_style.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/nav_style.css">
     <style>
         .auth-container {
             max-width: 500px;
@@ -186,8 +186,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
 
     <header>
-        <a href="index.php" class="toggle-link">Home</a>
-        <a href="profilo.php" class="toggle-link">Profile</a>
+        <a href="../index.php" class="toggle-link">Home</a>
+        <a href="../profilo.php" class="toggle-link">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
         <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>

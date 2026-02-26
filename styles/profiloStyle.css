@@ -1,0 +1,112 @@
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 120px auto;
+    padding: 0 24px;
+}
+
+.profile-info h2 {
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 10px;
+}
+
+.info-row {
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-row label {
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.info-row span,
+.info-row input {
+    font-size: 1.1rem;
+    color: #fff;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 5px 0;
+}
+
+.info-row input {
+    border-bottom: 1px solid #333;
+    outline: none;
+}
+
+.info-row input:focus {
+    border-bottom-color: var(--accent);
+}
+
+.btn-group {
+    margin-top: 40px;
+    display: flex;
+    gap: 15px;
+}
+
+.entry-list {
+    list-style: none;
+    padding: 0;
+}
+
+.entry-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #111;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.entry-item a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.entry-item a:hover {
+    color: var(--accent);
+}
+
+.status-pill {
+    font-family: monospace;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border: 1px solid #222;
+    color: #666;
+}
+
+.logout-btn {
+    background: transparent;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: monospace;
+    font-size: 0.7rem;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background: #ff4d4d;
+    color: #000;
+}
+
+@media (max-width: 800px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
