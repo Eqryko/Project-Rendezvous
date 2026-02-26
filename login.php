@@ -172,10 +172,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
 
-    <header class="Nav">
+    <header>
         <a href="index.php" class="toggle-link">Home</a>
-        <a href="ricerca.php" class="toggle-link">Archive</a>
-        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank">Git</a>
+        <a href="profilo.php" class="toggle-link">Profile</a>
+        <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
+        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
     <div class="auth-container">
