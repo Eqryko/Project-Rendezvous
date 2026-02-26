@@ -3,22 +3,27 @@
 session_start();
 require "config.php";
 
+// Imposto timezone per coerenza con database
 date_default_timezone_set("Europe/Rome");
 
+// Se utente già loggato, reindirizzo a profilo
 if (isset($_SESSION["user_id"])) {
     header("Location: profilo.php");
     exit();
 }
-
+// Variabili per messaggi di feedback
 $errore = "";
 $successo = "";
 
+// Determino tab attivo (login o register)
 $tab = $_GET["tab"] ?? "login";
 if (!in_array($tab, ["login", "register"], true)) $tab = "login";
 
+// Gestione form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $action = $_POST["action"] ?? "";
 
+    // REGISTRAZIONE UTENTE
     if ($action === "register") {
         $username = trim($_POST["username"] ?? "");
         $nome = trim($_POST["nome"] ?? "");
@@ -26,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $email = trim($_POST["email"] ?? "");
         $password = $_POST["password"] ?? "";
 
+        // Validazioni di base
         if ($username === "" || $email === "" || $password === "") {
             $errore = "STATUS_ERROR: Campi incompleti.";
             $tab = "register";
@@ -33,13 +39,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $errore = "STATUS_ERROR: Password troppo breve (min. 5).";
             $tab = "register";
         } else {
+            // Controllo unicità username/email
             $stmt = $conn->prepare("SELECT id_utente FROM utente WHERE username = ? OR email = ?");
             $stmt->execute([$username, $email]);
             if ($stmt->fetch()) {
                 $errore = "STATUS_ERROR: Credenziali già esistenti.";
                 $tab = "register";
             } else {
-                // Nota: In produzione usa sempre password_hash()
+                // da usare password_hash()
                 $stmt = $conn->prepare("INSERT INTO utente (username, nome, cognome, email, password_hash, ruolo, data_registrazione, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$username, $nome, $cognome, $email, $password, "UTENTE", date("Y-m-d H:i:s"), 1]);
 
@@ -49,10 +56,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
+    // LOGIN UTENTE
     if ($action === "login") {
         $userOrEmail = trim($_POST["userOrEmail"] ?? "");
         $password = $_POST["password"] ?? "";
 
+        // Validazioni di base
         $stmt = $conn->prepare("SELECT * FROM utente WHERE username = ? OR email = ?");
         $stmt->execute([$userOrEmail, $userOrEmail]);
         $user = $stmt->fetch();
@@ -68,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["ruolo"]     = $user["ruolo"];
             $_SESSION["data_registrazione"] = $user["data_registrazione"];
             
+            // Reindirizzo a profilo dopo login
             header("Location: profilo.php");
             exit();
         } else {

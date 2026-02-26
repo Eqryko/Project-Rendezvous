@@ -15,6 +15,7 @@ $programmi = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'programm
 $vettori = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'vettore'")->fetchAll(PDO::FETCH_ASSOC);
 $veicoli = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'veicolo'")->fetchAll(PDO::FETCH_ASSOC);
 
+// Funzione di utilità per convertire stringhe vuote in NULL
 function emptyToNull($value) {
     return (trim($value) === '') ? null : $value;
 }
@@ -26,12 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_creatore = $_SESSION['user_id'];
     $immagine_url = !empty($_POST['immagine_url']) ? $_POST['immagine_url'] : null;
 
+    // Inserimento voce principale e dettagli specifici in transazione
     try {
         $conn->beginTransaction();
         $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url) VALUES (?, ?, ?, 'IN_ATTESA', ?)");
         $stmt->execute([$nome, $tipo, $id_creatore, $immagine_url]);
         $id_voce = $conn->lastInsertId();
 
+        // Inserimento dettagli specifici in base al tipo di voce
         switch ($tipo) {
             case 'astronauta':
                 $sql = "INSERT INTO astronauta (id_voce, nome, cognome, nazione, data_nascita, data_morte) VALUES (?, ?, ?, ?, ?, ?)";
@@ -51,14 +54,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 break;
         }
 
+        // Esecuzione inserimento dettagli specifici
         if (isset($sql)) {
             $stmt_det = $conn->prepare($sql);
             $stmt_det->execute($params);
         }
+        // Se tutto va bene, commit della transazione
         $conn->commit();
         header("Location: voce.php?id=" . $id_voce . "&msg=created");
         exit();
     } catch (Exception $e) {
+        // In caso di errore, rollback e mostra messaggio
         if ($conn->inTransaction()) $conn->rollBack();
         $errore_creazione = $e->getMessage();
     }

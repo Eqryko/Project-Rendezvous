@@ -84,6 +84,11 @@
 
     <footer>
         <p id="usage"></p>
+        <!-- DA AGGIUNGERE
+         all rights reserved
+         terms and conditions
+         Contacts
+         -->
         <i> Credits: <br>
             Refosco Enrico & Munaro Alex
         </i>

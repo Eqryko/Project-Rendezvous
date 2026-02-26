@@ -3,23 +3,28 @@
 session_start();
 require "config.php"; 
 
+// controllo accesso: se non loggato, reindirizza a login.php
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
+// recupero ruolo utente loggato
 $userId = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT ruolo FROM utente WHERE id_utente = ?");
 $stmt->execute([$userId]);
 $userLoggato = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// se ruolo non è ADMIN o UTENTE, reindirizza a index.php
 if (!$userLoggato || ($userLoggato['ruolo'] !== 'ADMIN' && $userLoggato['ruolo'] !== 'UTENTE')) {
     header("Location: index.php"); 
     exit();
 }
 
+// variabili per gestione messaggi di stato
 $isAdmin = ($userLoggato['ruolo'] === 'ADMIN');
 
+// gestione cambio ruolo (solo per admin)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambia_ruolo'])) {
     if ($isAdmin) {
         $id_target = $_POST['id_utente_target'];
@@ -32,9 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambia_ruolo'])) {
     }
 }
 
+// recupero voci in attesa di approvazione (solo per admin)
 $query_attesa = "SELECT v.*, u.username FROM voce v JOIN utente u ON v.creatore = u.id_utente WHERE v.stato = 'IN_ATTESA' ORDER BY v.data_creazione DESC";
 $voci_attesa = $conn->query($query_attesa)->fetchAll(PDO::FETCH_ASSOC);
 
+// recupero lista utenti (solo per admin)
 $utenti = [];
 if ($isAdmin) {
     $utenti = $conn->query("SELECT id_utente, username, ruolo FROM utente ORDER BY username ASC")->fetchAll(PDO::FETCH_ASSOC);
