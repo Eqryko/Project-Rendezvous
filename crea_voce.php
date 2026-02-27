@@ -83,6 +83,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/nav_style.css">
     <link rel="stylesheet" href="styles/creaVoceStyle.css">
+    <script src="assets/scroll.js" defer></script>
+    <script src="assets/showFields.js" defer></script>
 </head>
 <body>
 
@@ -226,25 +228,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <footer>
         <i> Project Rendezvous — Data Entry Module </i>
     </footer>
-
-    <script>
-        function mostraCampi() {
-            document.querySelectorAll('.dynamic-fields').forEach(div => div.style.display = 'none');
-            const tipo = document.getElementById('tipoSelect').value;
-            if (tipo) {
-                const target = document.getElementById('fields_' + tipo);
-                if (target) target.style.display = 'block';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) entry.target.classList.add('active');
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-        });
-    </script>
 </body>
 </html>

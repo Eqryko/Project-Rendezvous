@@ -60,6 +60,7 @@ if ($isAdmin) {
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/nav_style.css">
     <link rel="stylesheet" href="styles/adminStyle.css">
+    <script src="assets/scroll.js" defer></script>
 </head>
 <body>
 
@@ -161,16 +162,5 @@ if ($isAdmin) {
     <footer>
         <i style="color: #222; font-family: monospace;">System Terminal // Refosco & Munaro</i>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) entry.target.classList.add('active');
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-        });
-    </script>
 </body>
 </html>

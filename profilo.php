@@ -88,6 +88,7 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/nav_style.css">
     <link rel="stylesheet" href="styles/profiloStyle.css">
+    <script src="assets/scroll.js" defer></script>
 </head>
 <body>
 
@@ -192,16 +193,5 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </section>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) entry.target.classList.add('active');
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-        });
-    </script>
 </body>
 </html>
