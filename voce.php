@@ -40,9 +40,33 @@ if ($edit_mode && !$is_logged) {
     exit();
 }
 
-// --- LOGICA DI SALVATAGGIO E APPROVAZIONE ---
-// (Manteniamo la tua logica robusta di transazioni e revisioni, ma ottimizzata per i messaggi di stato)
-// ... [Logica PHP di salvataggio/approvazione invariata per funzionalità] ...
+// --- LOGICA DI APPROVAZIONE ---
+if (isset($_POST['approva_voce']) && $is_admin) {
+    $id_app = $_POST['id_voce_approva'];
+    $admin_id = $_SESSION['user_id'];
+    
+    $stmt = $conn->prepare("UPDATE voce SET stato = 'APPROVATA', approvatore = ?, data_approvazione = NOW() WHERE id_voce = ?");
+    if($stmt->execute([$admin_id, $id_app])) {
+        header("Location: voce.php?id=$id_app&msg=approved");
+        exit();
+    }
+}
+
+// --- LOGICA DI RIFIUTO (Elimina la proposta) ---
+if (isset($_POST['rifiuta_voce']) && $is_admin) {
+    $id_del = $_POST['id_voce_approva'];
+    // Qui cancelliamo la voce se rifiutata, o potresti cambiare stato in 'RIFIUTATA'
+    $conn->prepare("DELETE FROM voce WHERE id_voce = ?")->execute([$id_del]);
+    header("Location: ricerca.php?msg=rejected");
+    exit();
+}
+
+// --- LOGICA ELIMINAZIONE DEFINITIVA ---
+if (isset($_POST['elimina_definitivamente']) && $is_admin) {
+    $conn->prepare("DELETE FROM voce WHERE id_voce = ?")->execute([$id]);
+    header("Location: ricerca.php?msg=deleted");
+    exit();
+}
 
 // 2. RECUPERO DETTAGLI SPECIFICI
 switch ($tipo) {
@@ -52,7 +76,12 @@ switch ($tipo) {
     case 'astronauta':
         $query_dettagli = "SELECT * FROM astronauta WHERE id_voce = ?";
         break;
+    case 'programma':
+        // Join con voce per vedere il nome dell'azienda responsabile
+        $query_dettagli = "SELECT p.*, v.nome AS nome_azienda FROM programma p LEFT JOIN voce v ON p.id_azienda = v.id_voce WHERE p.id_voce = ?";
+        break;
     default:
+        // Gestisce azienda, vettore, veicolo in modo generico
         $query_dettagli = "SELECT * FROM $tipo WHERE id_voce = ?";
         break;
 }
@@ -116,23 +145,54 @@ function generaSelect($nome_campo, $valore_attuale, $lista)
                     if (in_array($chiave, ['id_voce', 'lancio', 'id_lancio']))
                         continue;
 
-                    // Logica di visualizzazione intelligente dei nomi joinati
+                    // --- LOGICA LINK CORRELATI (Wikipedia Style) ---
+                    $link_id = null;
+                    $label_display = str_replace('_', ' ', $chiave);
+
                     if (!$edit_mode) {
+                        // Se stiamo visualizzando una missione, colleghiamo i nomi alle relative voci
+                        if ($tipo === 'missione') {
+                            if ($chiave == 'nome_azienda')
+                                $link_id = $dettagli['id_azienda'] ?? null;
+                            if ($chiave == 'nome_programma')
+                                $link_id = $dettagli['id_programma'] ?? null;
+                            if ($chiave == 'nome_vettore')
+                                $link_id = $dettagli['id_vettore'] ?? null;
+                            if ($chiave == 'nome_veicolo')
+                                $link_id = $dettagli['id_veicolo'] ?? null;
+                        }
+
+                        // Se stiamo visualizzando un veicolo, colleghiamo l'azienda
+                        if ($tipo === 'veicolo' && $chiave == 'azienda_produttrice') {
+                            $link_id = $dettagli['id_azienda'] ?? null;
+                        }
+
+                        // Pulizia visualizzazione: nascondiamo gli ID crudi e i nomi duplicati
                         if (in_array($chiave, ['id_azienda', 'id_programma', 'id_vettore', 'id_veicolo']))
                             continue;
+                        // Se esiste una versione "nome_..." della chiave attuale, saltiamo questa (per evitare doppioni)
                         if (isset($dettagli['nome_' . $chiave]))
                             continue;
                     }
+
+                    // Saltiamo i nomi tecnici durante l'editing
                     if ($edit_mode && in_array($chiave, ['nome_azienda', 'nome_programma', 'nome_vettore', 'nome_veicolo', 'azienda_produttrice']))
                         continue;
                     ?>
                     <div class="profile-item">
-                        <label><?= str_replace('_', ' ', $chiave) ?></label>
+                        <label><?= strtoupper($label_display) ?></label>
+
                         <?php if ($edit_mode): ?>
                             <input type="text" name="<?= $chiave ?>" value="<?= htmlspecialchars($valore ?? '') ?>"
                                 class="cyber-input">
                         <?php else: ?>
-                            <span><?= htmlspecialchars($valore ?? '---') ?></span>
+                            <?php if ($link_id): ?>
+                                <a href="voce.php?id=<?= $link_id ?>" class="wiki-link">
+                                    <?= htmlspecialchars($valore ?? '---') ?>
+                                </a>
+                            <?php else: ?>
+                                <span><?= htmlspecialchars($valore ?? '---') ?></span>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>

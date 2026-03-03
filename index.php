@@ -83,17 +83,41 @@
         <?php endif; ?>
     </div>
 
-    <footer>
-        <p>All rights reserved</p>
-        <p id="usage"></p>
-        <!-- DA AGGIUNGERE
-         all rights reserved
-         terms and conditions
-         Contacts
-         -->
-        <i> Credits: <br>
-            Refosco Enrico & Munaro Alex
-        </i>
+    <footer class="site-footer reveal">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">PROJECT_RENDEZVOUS</div>
+                <p>&copy; <?= date("Y") ?> All Rights Reserved.<br>Humanity's Technological Legacy Archive.</p>
+            </div>
+
+            <div class="footer-group">
+                <label>Information</label>
+                <ul>
+                    <li><a href="terms.php">Terms and Conditions</a></li>
+                    <li><a href="privacy.php">Privacy Policy</a></li>
+                    <li><a href="cookies.php">Cookie Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-group">
+                <label>Com-Link (Contacts)</label>
+                <ul>
+                    <li>T: +39 347 304 4594</li>
+                    <li>E: <a href="mailto:enricoorefosco@gmail.com">enricoorefosco@gmail.com</a></li>
+                    <li>A: ITIS Rossi, Vicenza, IT</li>
+                </ul>
+            </div>
+
+            <div class="footer-group">
+                <label>Development Team</label>
+                <p>Refosco Enrico<br>Munaro Alex</p>
+                <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank" class="git-link">GITHUB_REPOSITORY</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p id="usage">System Status: 100% Operational</p>
+        </div>
     </footer>
 </body>
 </html>

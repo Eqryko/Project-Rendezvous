@@ -180,3 +180,104 @@ footer {
 
 /* Rimuovi l'immagine pad come richiesto */
 .pad { display: none; }
+
+/* --- UPDATED FOOTER STYLE --- */
+.site-footer {
+    margin-top: 150px;
+    padding: 80px 24px 40px;
+    border-top: 1px solid #222;
+    background-color: #050505; /* Leggermente più scuro del bg principale */
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+}
+
+.footer-logo {
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: -0.05em;
+    margin-bottom: 15px;
+    color: var(--accent);
+}
+
+.footer-brand p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.footer-group label {
+    display: block;
+    font-family: monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.footer-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-group ul li {
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.footer-group a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.3s var(--ease);
+}
+
+.footer-group a:hover {
+    color: var(--accent);
+}
+
+.git-link {
+    display: inline-block;
+    margin-top: 15px;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--accent) !important;
+    border-bottom: 1px solid transparent;
+}
+
+.git-link:hover {
+    border-bottom-color: var(--accent);
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 60px auto 0;
+    padding-top: 30px;
+    border-top: 1px solid #111;
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Responsive Footer */
+@media (max-width: 900px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+}
