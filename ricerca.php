@@ -15,9 +15,25 @@ if (isset($_GET['ajax'])) {
         $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA'";
         $stmt = $conn->prepare($sql);
     } else {
-        $input_pulito = str_replace("VETTOREVEICOLO", "VETTORE VEICOLO", strtoupper($input));
-        $termini = explode(" ", $input_pulito);
-        $termini = array_filter($termini); 
+        $input_upper = strtoupper($input);
+        $tipi_validi = ['ASTRONAUTA', 'AZIENDA', 'MISSIONE', 'PROGRAMMA', 'VETTORE', 'VEICOLO'];
+$termini = [];
+
+// Cerca ogni tipo valido dentro la stringa
+foreach ($tipi_validi as $tipo) {
+    if (strpos($input_upper, $tipo) !== false) {
+        $termini[] = $tipo;
+        $input_upper = str_replace($tipo, '', $input_upper);
+    }
+}
+
+// Aggiunge eventuali altre parole residue
+$extra = trim($input_upper);
+if (!empty($extra)) {
+    $termini = array_merge($termini, explode(" ", $extra));
+}
+
+$termini = array_filter($termini); 
 
         $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA' AND (";
         $condizioni = [];
