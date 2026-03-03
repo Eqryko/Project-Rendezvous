@@ -5,7 +5,9 @@ require "src/components/config.php";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
-if ($conn->connect_error) { die("Connessione fallita."); }
+if ($conn->connect_error) {
+    die("Connessione fallita.");
+}
 
 // --- LOGICA AJAX ---
 if (isset($_GET['ajax'])) {
@@ -17,23 +19,23 @@ if (isset($_GET['ajax'])) {
     } else {
         $input_upper = strtoupper($input);
         $tipi_validi = ['ASTRONAUTA', 'AZIENDA', 'MISSIONE', 'PROGRAMMA', 'VETTORE', 'VEICOLO'];
-$termini = [];
+        $termini = [];
 
-// Cerca ogni tipo valido dentro la stringa
-foreach ($tipi_validi as $tipo) {
-    if (strpos($input_upper, $tipo) !== false) {
-        $termini[] = $tipo;
-        $input_upper = str_replace($tipo, '', $input_upper);
-    }
-}
+        // Cerca ogni tipo valido dentro la stringa
+        foreach ($tipi_validi as $tipo) {
+            if (strpos($input_upper, $tipo) !== false) {
+                $termini[] = $tipo;
+                $input_upper = str_replace($tipo, '', $input_upper);
+            }
+        }
 
-// Aggiunge eventuali altre parole residue
-$extra = trim($input_upper);
-if (!empty($extra)) {
-    $termini = array_merge($termini, explode(" ", $extra));
-}
+        // Aggiunge eventuali altre parole residue
+        $extra = trim($input_upper);
+        if (!empty($extra)) {
+            $termini = array_merge($termini, explode(" ", $extra));
+        }
 
-$termini = array_filter($termini); 
+        $termini = array_filter($termini);
 
         $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA' AND (";
         $condizioni = [];
@@ -49,7 +51,9 @@ $termini = array_filter($termini);
         }
         $sql .= implode(" OR ", $condizioni) . ")";
         $stmt = $conn->prepare($sql);
-        if ($types) { $stmt->bind_param($types, ...$params); }
+        if ($types) {
+            $stmt->bind_param($types, ...$params);
+        }
     }
 
     $stmt->execute();
@@ -71,30 +75,36 @@ $termini = array_filter($termini);
     } else {
         echo "<tr><td colspan='3' style='padding: 50px 0; color: #444;'>NESSUN DATO TROVATO NELL'ARCHIVIO.</td></tr>";
     }
-    $stmt->close(); $conn->close(); exit;
+    $stmt->close();
+    $conn->close();
+    exit;
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <title>Archive Search — Rendezvous</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
+    <link rel="icon"
+        href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
-    
+
     <link rel="stylesheet" href="assets/styles/rstyle.css">
     <link rel="stylesheet" href="assets/styles/nav_style.css">
     <script src="assets/scripts/exploreScript.js" defer></script>
 </head>
+
 <body>
 
     <header>
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentation </a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing"
+            target="_blank"> Documentation </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
@@ -107,7 +117,8 @@ $termini = array_filter($termini);
         <a href="crea_voce.php" target="_blank" id="creavoce" class="reveal">Add Entry +</a>
 
         <div class="search-container reveal">
-            <input type="text" id="cercaNome" placeholder="TYPE TO FILTER ARCHIVE..." oninput="caricaDati()" autocomplete="off">
+            <input type="text" id="cercaNome" placeholder="TYPE TO FILTER ARCHIVE..." oninput="caricaDati()"
+                autocomplete="off">
         </div>
 
         <table class="reveal">
@@ -119,7 +130,7 @@ $termini = array_filter($termini);
                 </tr>
             </thead>
             <tbody id="corpoTabella">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
@@ -127,4 +138,5 @@ $termini = array_filter($termini);
         <i> Project Rendezvous — Archive System v2.0 </i>
     </footer>
 </body>
+
 </html>
