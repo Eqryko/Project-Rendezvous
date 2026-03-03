@@ -17,72 +17,72 @@ $successo = "";
 
 // Determino tab attivo (login o register)
 $tab = $_GET["tab"] ?? "login";
-if (!in_array($tab, ["login", "register"], true)) $tab = "login";
+if (!in_array($tab, ["login", "register"], true))
+    $tab = "login";
 
 // Gestione form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $action = $_POST["action"] ?? "";
 
     // REGISTRAZIONE UTENTE
+    // --- REGISTRAZIONE UTENTE ---
     if ($action === "register") {
+        // 1. RECUPERO I DATI DAL POST (Fondamentale, altrimenti le variabili restano nulle!)
         $username = trim($_POST["username"] ?? "");
         $nome = trim($_POST["nome"] ?? "");
         $cognome = trim($_POST["cognome"] ?? "");
         $email = trim($_POST["email"] ?? "");
-        $password = $_POST["password"] ?? "";
+        $password_chiaro = $_POST["password"] ?? ""; // La chiamiamo così per chiarezza
 
-        // Validazioni di base
-        if ($username === "" || $email === "" || $password === "") {
+        // 2. VALIDAZIONI DI BASE
+        if ($username === "" || $email === "" || $password_chiaro === "") {
             $errore = "STATUS_ERROR: Campi incompleti.";
             $tab = "register";
-        } elseif (strlen($password) < 5) {
+        } elseif (strlen($password_chiaro) < 5) {
             $errore = "STATUS_ERROR: Password troppo breve (min. 5).";
             $tab = "register";
         } else {
-            // Controllo unicità username/email
+            // 3. CONTROLLO UNICITÀ
             $stmt = $conn->prepare("SELECT id_utente FROM utente WHERE username = ? OR email = ?");
             $stmt->execute([$username, $email]);
+
             if ($stmt->fetch()) {
                 $errore = "STATUS_ERROR: Credenziali già esistenti.";
                 $tab = "register";
             } else {
-                // da usare password_hash()
-                $stmt = $conn->prepare("INSERT INTO utente (username, nome, cognome, email, password_hash, ruolo, data_registrazione, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$username, $nome, $cognome, $email, $password, "UTENTE", date("Y-m-d H:i:s"), 1]);
+                // 4. CRITTOGRAFIA (Creiamo l'hash della password)
+                $hashed_password = password_hash($password_chiaro, PASSWORD_DEFAULT);
 
-                $successo = "STATUS_OK: Registrazione completata.";
-                $tab = "login";
+                // 5. INSERIMENTO NEL DATABASE
+                $stmt = $conn->prepare("INSERT INTO utente (username, nome, cognome, email, password_hash, ruolo, data_registrazione, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+                // Usiamo $hashed_password invece della password in chiaro
+                if ($stmt->execute([$username, $nome, $cognome, $email, $hashed_password, "UTENTE", date("Y-m-d H:i:s"), 1])) {
+                    $successo = "STATUS_OK: Registrazione completata.";
+                    $tab = "login";
+                } else {
+                    $errore = "STATUS_ERROR: Errore durante il salvataggio.";
+                }
             }
         }
     }
-
-    // LOGIN UTENTE
+    // --- LOGIN UTENTE ---
     if ($action === "login") {
         $userOrEmail = trim($_POST["userOrEmail"] ?? "");
-        $password = $_POST["password"] ?? "";
+        $password_input = $_POST["password"] ?? "";
 
-        // Validazioni di base
         $stmt = $conn->prepare("SELECT * FROM utente WHERE username = ? OR email = ?");
         $stmt->execute([$userOrEmail, $userOrEmail]);
         $user = $stmt->fetch();
 
-        // Controllo credenziali
-        if ($user && $password == $user["password_hash"]) {
-            // SALVATAGGIO COMPLETO IN SESSIONE
-            $_SESSION["user_id"]   = $user["id_utente"];
-            $_SESSION["username"]  = $user["username"];
-            $_SESSION["nome"]      = $user["nome"];
-            $_SESSION["cognome"]   = $user["cognome"];
-            $_SESSION["email"]     = $user["email"];
-            $_SESSION["ruolo"]     = $user["ruolo"];
-            $_SESSION["data_registrazione"] = $user["data_registrazione"];
-            
-            // Reindirizzo a profilo dopo login
+        // Verifichiamo se l'utente esiste E se la password corrisponde all'hash
+        if ($user && password_verify($password_input, $user["password_hash"])) {
+            // ... Logica di salvataggio sessione ...
+            $_SESSION["user_id"] = $user["id_utente"];
             header("Location: ../profilo.php");
             exit();
         } else {
             $errore = "STATUS_DENIED: Credenziali errate.";
-            $tab = "login";
         }
     }
 }
@@ -94,9 +94,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Gate — Rendezvous</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
+    <link rel="icon"
+        href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
-    
+
     <link rel="stylesheet" href="../assets/styles/style.css">
     <link rel="stylesheet" href="../assets/styles/nav_style.css">
     <link rel="stylesheet" href="../assets/styles/loginStyle.css">
@@ -108,7 +109,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <a href="../index.php" class="toggle-link">Home</a>
         <a href="../profilo.php" class="toggle-link">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing"
+            target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 

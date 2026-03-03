@@ -1,7 +1,26 @@
 <?php
 // profilo.php
 session_start();
+
 require "src/components/config.php";
+// --- Recupero dati freschi dal Database ---
+$user_id = $_SESSION["user_id"];
+$stmt_u = $conn->prepare("SELECT * FROM utente WHERE id_utente = ?");
+$stmt_u->execute([$user_id]);
+$user_db = $stmt_u->fetch(PDO::FETCH_ASSOC);
+
+if (!$user_db) {
+    session_destroy();
+    header("Location: auth/login.php");
+    exit();
+}
+
+// Aggiorniamo la sessione per sicurezza, dava warnings
+$_SESSION["username"] = $user_db["username"];
+$_SESSION["nome"] = $user_db["nome"];
+$_SESSION["cognome"] = $user_db["cognome"];
+$_SESSION["email"] = $user_db["email"];
+$_SESSION["ruolo"] = $user_db["ruolo"];
 
 if (!isset($_SESSION["user_id"])) {
     header("Location: auth/login.php");
@@ -28,6 +47,7 @@ if (isset($_POST['save_profile'])) {
     $nuova_email = trim($_POST['email']);
     $nuova_pass = $_POST['password'];
 
+    // CONTROLLI !!!
     if (empty($nuovo_username) || empty($nuovo_nome) || empty($nuovo_cognome) || empty($nuova_email)) {
         $errore = "ERRORE: Campi obbligatori mancanti.";
         $edit_mode = true;
@@ -44,10 +64,13 @@ if (isset($_POST['save_profile'])) {
                 $edit_mode = true;
             } else {
                 if (!empty($nuova_pass)) {
-                    // Nota: Qui puoi rimettere password_hash se decidi di usarlo
+                    // CRITTOGRAFIA: Hash della nuova password
+                    $hashed_pass = password_hash($nuova_pass, PASSWORD_DEFAULT); // crittografia password con algoritmo di default (php)
+
                     $sql = "UPDATE utente SET username = ?, nome = ?, cognome = ?, email = ?, password_hash = ? WHERE id_utente = ?";
-                    $params = [$nuovo_username, $nuovo_nome, $nuovo_cognome, $nuova_email, $nuova_pass, $user_id];
+                    $params = [$nuovo_username, $nuovo_nome, $nuovo_cognome, $nuova_email, $hashed_pass, $user_id];
                 } else {
+                    // Se la password è vuota, non aggiorniamo quel campo
                     $sql = "UPDATE utente SET username = ?, nome = ?, cognome = ?, email = ? WHERE id_utente = ?";
                     $params = [$nuovo_username, $nuovo_nome, $nuovo_cognome, $nuova_email, $user_id];
                 }
@@ -82,9 +105,10 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
     <title>Dossier — <?= htmlspecialchars($_SESSION["username"]) ?></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
+    <link rel="icon"
+        href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
-    
+
     <link rel="stylesheet" href="assets/styles/style.css">
     <link rel="stylesheet" href="assets/styles/nav_style.css">
     <link rel="stylesheet" href="assets/styles/profiloStyle.css">
@@ -101,19 +125,27 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
     </header>
 
     <div class="profile-grid">
-        
+
         <section class="profile-info reveal">
             <h1>DOSSIER_<?= htmlspecialchars($_SESSION["username"]) ?></h1>
             <p style="font-family: monospace; color: #444; margin-bottom: 40px;">
                 ID: <?= $_SESSION["user_id"] ?> // RANK: <?= $_SESSION["ruolo"] ?>
             </p>
 
-            <?php if ($messaggio): ?> <div class="msg ok" style="border-left: 3px solid var(--accent); padding: 10px; font-family: monospace; font-size: 0.8rem; margin-bottom: 20px;"><?= $messaggio ?></div> <?php endif; ?>
-            <?php if ($errore): ?> <div class="msg err" style="border-left: 3px solid #ff4d4d; padding: 10px; font-family: monospace; font-size: 0.8rem; margin-bottom: 20px; color: #ff4d4d;"><?= $errore ?></div> <?php endif; ?>
+            <?php if ($messaggio): ?>
+                <div class="msg ok"
+                    style="border-left: 3px solid var(--accent); padding: 10px; font-family: monospace; font-size: 0.8rem; margin-bottom: 20px;">
+                    <?= $messaggio ?>
+                </div> <?php endif; ?>
+            <?php if ($errore): ?>
+                <div class="msg err"
+                    style="border-left: 3px solid #ff4d4d; padding: 10px; font-family: monospace; font-size: 0.8rem; margin-bottom: 20px; color: #ff4d4d;">
+                    <?= $errore ?>
+                </div> <?php endif; ?>
 
             <form method="post">
                 <h2>Security & Identity</h2>
-                
+
                 <div class="info-row">
                     <label>Designation</label>
                     <?php if ($edit_mode): ?>
@@ -135,7 +167,8 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
                     <div class="info-row">
                         <label>Last Name</label>
                         <?php if ($edit_mode): ?>
-                            <input type="text" name="cognome" value="<?= htmlspecialchars($_SESSION["cognome"]) ?>" required>
+                            <input type="text" name="cognome" value="<?= htmlspecialchars($_SESSION["cognome"]) ?>"
+                                required>
                         <?php else: ?>
                             <span><?= htmlspecialchars($_SESSION["cognome"]) ?></span>
                         <?php endif; ?>
@@ -160,10 +193,13 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
 
                 <div class="btn-group">
                     <?php if ($edit_mode): ?>
-                        <button type="submit" name="save_profile" class="btn-auth" style="margin:0; flex:1;">Commit Changes</button>
-                        <a href="profilo.php" class="logout-btn" style="text-decoration:none; text-align:center; flex:1; border-color: #444; color: #444;">Abort</a>
+                        <button type="submit" name="save_profile" class="btn-auth" style="margin:0; flex:1;">Commit
+                            Changes</button>
+                        <a href="profilo.php" class="logout-btn"
+                            style="text-decoration:none; text-align:center; flex:1; border-color: #444; color: #444;">Abort</a>
                     <?php else: ?>
-                        <button type="submit" name="enable_edit" class="btn-auth" style="margin:0; flex:1;">Edit Profile</button>
+                        <button type="submit" name="enable_edit" class="btn-auth" style="margin:0; flex:1;">Edit
+                            Profile</button>
                         <button type="submit" name="logout" class="logout-btn" style="flex:1;">Terminate Session</button>
                     <?php endif; ?>
                 </div>
@@ -173,8 +209,9 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
         <section class="profile-activity reveal">
             <div class="profile-info">
                 <h2>Operational History</h2>
-                <p style="font-family: monospace; color: #444; font-size: 0.8rem;">Voci inviate al database centrale.</p>
-                
+                <p style="font-family: monospace; color: #444; font-size: 0.8rem;">Voci inviate al database centrale.
+                </p>
+
                 <ul class="entry-list" style="margin-top: 30px;">
                     <?php if (empty($voci_utente)): ?>
                         <li style="color: #222; font-family: monospace;">[ NO_RECORDS_FOUND ]</li>
@@ -182,7 +219,8 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
                         <?php foreach ($voci_utente as $voce): ?>
                             <li class="entry-item">
                                 <div>
-                                    <span style="font-size: 0.6rem; color: #444; display: block; font-family: monospace;"><?= $voce['tipo'] ?></span>
+                                    <span
+                                        style="font-size: 0.6rem; color: #444; display: block; font-family: monospace;"><?= $voce['tipo'] ?></span>
                                     <a href="voce.php?id=<?= $voce['id_voce'] ?>"><?= htmlspecialchars($voce['nome']) ?></a>
                                 </div>
                                 <span class="status-pill"><?= $voce['stato'] ?? 'ACTIVE' ?></span>

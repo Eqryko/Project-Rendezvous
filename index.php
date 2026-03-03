@@ -24,7 +24,7 @@
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentation </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
@@ -38,9 +38,9 @@
             </div>
             
             <div class="btn-container">
-                <a href="ricerca.php" class="btn-action btn-primary">Esplora Catalogo</a>
+                <a href="ricerca.php" class="btn-action btn-primary">Explore Catalog</a>
                 <?php if(isset($_SESSION['user_id'])): ?>
-                    <a href="crea_voce.php" class="btn-action btn-secondary">Aggiungi Voce</a>
+                    <a href="crea_voce.php" class="btn-action btn-secondary">Add Entry</a>
                 <?php endif; ?>
             </div>
         </section>
@@ -54,25 +54,25 @@
 
         <div class="stats-container">
             <div class="stat-card reveal" onclick="window.location.href='ricerca.php?tipo=MISSIONE'">
-                <strong>Missioni</strong>
-                <p>Archivio storico dei lanci e degli obiettivi orbitali.</p>
+                <strong>Missions</strong>
+                <p>Historical archive of launches and orbital targets.</p>
             </div>
             <div class="stat-card reveal" onclick="window.location.href='ricerca.php?tipo=ASTRONAUTA'">
-                <strong>Astronauti</strong>
-                <p>Registri biogafici e record di permanenza nel cosmo.</p>
+                <strong>Astronauts</strong>
+                <p>Biographic records and records of permanence in the cosmos.</p>
             </div>
             <div class="stat-card reveal" onclick="window.location.href='ricerca.php?tipo=VETTORE VEICOLO'">
-                <strong>Tecnologia</strong>
-                <p>Sistemi propulsivi, vettori e hardware spaziale.</p>
+                <strong>Technology</strong>
+                <p>Propulsion systems, launchers and space hardware.</p>
             </div>
             <div class="stat-card reveal" onclick="window.location.href='ricerca.php?tipo=AZIENDA'">
-                <strong>Aziende</strong>
-                <p>Agenzie governative e partner dell'industria privata.</p>
+                <strong>Agencies</strong>
+                <p>Government agencies and private industry partners.</p>
             </div>
         </div>
 
         <div class="quote-section reveal">
-            <p class="quote">"Non abbiate paura, sono uno di voi! Sono venuto dallo spazio."</p>
+            <p class="quote">"Don't be afraid, I'm one of you! I came from space."</p>
             <cite style="color: var(--accent); font-weight: 700; letter-spacing: 0.1em; font-style: normal;">— YURI GAGARIN, 1961</cite>
         </div>
 

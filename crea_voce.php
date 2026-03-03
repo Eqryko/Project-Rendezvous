@@ -21,7 +21,7 @@ function emptyToNull($value)
     return (trim($value) === '') ? null : $value;
 }
 
-// Gestione del form (Logica invariata per sicurezza)
+// Gestione del form
 // --- Inizio logica POST ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
@@ -29,14 +29,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_creatore = $_SESSION['user_id'];
     $immagine_url = !empty($_POST['immagine_url']) ? $_POST['immagine_url'] : null;
 
-    // --- NUOVA LOGICA DI STATO ---
-    $is_admin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN');
+    // --- LOGICA DI STATO ---
+    $is_admin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN'); // Solo gli admin possono approvare direttamente
     $stato = $is_admin ? 'APPROVATA' : 'IN_ATTESA';
-    $approvatore = $is_admin ? $id_creatore : null;
-    $data_approvazione = $is_admin ? date('Y-m-d H:i:s') : null;
+    $approvatore = $is_admin ? $id_creatore : null; // Se è admin, lui stesso è l'approvatore
+    $data_approvazione = $is_admin ? date('Y-m-d H:i:s') : null;// Se è admin, la data di approvazione è ora, altrimenti null
 
     try {
-        $conn->beginTransaction();
+        $conn->beginTransaction(); // connessione in modalità transazione per garantire integrità dei dati
 
         // Inseriamo anche approvatore e data_approvazione se è admin
         $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url, approvatore, data_approvazione) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_det = $conn->prepare($sql);
             $stmt_det->execute($params);
         }
-        // Se tutto va bene, commit della transazione
+        // Se tutto va bene, commit della transazione, redirect alla pagina della voce appena creata con messaggio di successo
         $conn->commit();
         header("Location: voce.php?id=" . $id_voce . "&msg=created");
         exit();

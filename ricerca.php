@@ -78,7 +78,7 @@ if (isset($_GET['ajax'])) {
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentation </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
@@ -98,8 +98,8 @@ if (isset($_GET['ajax'])) {
             <thead>
                 <tr>
                     <th width="10%">ID</th>
-                    <th width="60%">Designazione</th>
-                    <th width="30%">Categoria</th>
+                    <th width="60%">Designation</th>
+                    <th width="30%">Category</th>
                 </tr>
             </thead>
             <tbody id="corpoTabella">
