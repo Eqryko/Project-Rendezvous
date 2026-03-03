@@ -1,11 +1,11 @@
 <?php
 // crea_voce.php
 session_start();
-require "assets/config.php";
+require "src/components/config.php";
 
 // Protezione: solo utenti loggati
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // O un redirect alla home
+    header("Location: auth/login.php"); // O un redirect alla home
     exit("Accesso negato.");
 }
 
@@ -80,11 +80,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
     
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/nav_style.css">
-    <link rel="stylesheet" href="styles/creaVoceStyle.css">
-    <script src="assets/scroll.js" defer></script>
-    <script src="assets/showFields.js" defer></script>
+    <link rel="stylesheet" href="assets/styles/style.css">
+    <link rel="stylesheet" href="assets/styles/nav_style.css">
+    <link rel="stylesheet" href="assets/styles/creaVoceStyle.css">
+    <script src="assets/scripts/scroll.js" defer></script>
+    <script src="assets/scripts/showFields.js" defer></script>
 </head>
 <body>
 

@@ -1,7 +1,7 @@
 <?php
 // ricerca.php
 session_start();
-require "assets/config.php";
+require "src/components/config.php";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
@@ -68,9 +68,9 @@ if (isset($_GET['ajax'])) {
     <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
     
-    <link rel="stylesheet" href="styles/rstyle.css">
-    <link rel="stylesheet" href="styles/nav_style.css">
-    <script src="assets/exploreScript.js" defer></script>
+    <link rel="stylesheet" href="assets/styles/rstyle.css">
+    <link rel="stylesheet" href="assets/styles/nav_style.css">
+    <script src="assets/scripts/exploreScript.js" defer></script>
 </head>
 <body>
 

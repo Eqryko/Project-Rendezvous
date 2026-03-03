@@ -1,7 +1,7 @@
 <?php
 // voce.php
 session_start();
-require "assets/config.php";
+require "src/components/config.php";
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
@@ -36,7 +36,7 @@ $is_logged = isset($_SESSION['user_id']);
 
 // Se l'utente tenta di editare senza essere loggato
 if ($edit_mode && !$is_logged) {
-    header("Location: login.php");
+    header("Location: auth/login.php");
     exit();
 }
 
@@ -80,9 +80,9 @@ function generaSelect($nome_campo, $valore_attuale, $lista)
     <title><?= htmlspecialchars($voce['nome_voce']) ?> — Dossier</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/nav_style.css">
-    <link rel="stylesheet" href="styles/voceStyle.css">
+    <link rel="stylesheet" href="assets/styles/style.css">
+    <link rel="stylesheet" href="assets/styles/nav_style.css">
+    <link rel="stylesheet" href="assets/styles/voceStyle.css">
 </head>
 <body>
 

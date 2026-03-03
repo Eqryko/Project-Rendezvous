@@ -12,10 +12,10 @@
     <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
     
-    <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="styles/nav_style.css">
-    <script src="scripts/script.js" defer></script>
-    <script src="assets/revealOnScroll.js" defer></script>
+    <link rel="stylesheet" href="assets/styles/style.css">
+    <link rel="stylesheet" href="assets/styles/nav_style.css">
+    <script src="assets/scripts/script.js" defer></script>
+    <script src="assets/scripts/revealOnScroll.js" defer></script>
 </head>
 
 <body>

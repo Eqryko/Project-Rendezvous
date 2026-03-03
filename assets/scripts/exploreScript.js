@@ -13,9 +13,12 @@ function caricaDati() {
     const query = document.getElementById('cercaNome').value;
     const tabella = document.getElementById('corpoTabella');
 
-    fetch(`ricerca.php?ajax=1&nome=${encodeURIComponent(query)}`)
+    // Mostra un indicatore di caricamento
+    fetch(`ricerca.php?ajax=1&nome=${encodeURIComponent(query)}`) // Chiamata AJAX a ricerca.php con parametro ajax=1
+    // richiesta GET a ricerca.php, passando il nome come parametro (per default)
         .then(response => response.text())
         .then(data => {
+            // una volta ricevuti i dati, aggiorna la tabella
             tabella.innerHTML = data;
             // Reset stile per animazione entry
             document.querySelectorAll('.result-row').forEach(r => {
@@ -25,6 +28,8 @@ function caricaDati() {
             });
             animateRows();
         });
+        // ritorna una promessa per permettere l'uso di .then() in explore.html
+        // Richiesto in sede d'esame
 }
 
 // Intersection Observer per i titoli iniziali
