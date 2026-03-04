@@ -11,12 +11,13 @@ if ($conn->connect_error) {
 
 // --- LOGICA AJAX ---
 if (isset($_GET['ajax'])) {
-    $input = isset($_GET['nome']) ? trim($_GET['nome']) : '';
+    $input = isset($_GET['nome']) ? trim($_GET['nome']) : ''; // recupera input di ricerca, rimuove spazi superflui
 
     if (empty($input)) {
-        $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA'";
+        $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA'"; // prende solo voci approvate se input è vuoto
         $stmt = $conn->prepare($sql);
     } else {
+        // se sto cercando
         $input_upper = strtoupper($input);
         $tipi_validi = ['ASTRONAUTA', 'AZIENDA', 'MISSIONE', 'PROGRAMMA', 'VETTORE', 'VEICOLO'];
         $termini = [];
@@ -52,7 +53,7 @@ if (isset($_GET['ajax'])) {
         $sql .= implode(" OR ", $condizioni) . ")";
         $stmt = $conn->prepare($sql);
         if ($types) {
-            $stmt->bind_param($types, ...$params);
+            $stmt->bind_param($types, ...$params); // bind dinamico dei parametri alla query
         }
     }
 

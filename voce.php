@@ -71,14 +71,16 @@ if (isset($_POST['elimina_definitivamente']) && $is_admin) {
 // 2. RECUPERO DETTAGLI SPECIFICI
 switch ($tipo) {
     case 'missione':
-        $query_dettagli = "SELECT m.*, v1.nome AS nome_azienda, v2.nome AS nome_programma, v3.nome AS nome_vettore, v4.nome AS nome_veicolo, e.data AS data_lancio, e.ora AS ora_lancio, e.luogo AS luogo_lancio, e.pianeta AS pianeta_lancio FROM missione m LEFT JOIN voce v1 ON m.id_azienda = v1.id_voce LEFT JOIN voce v2 ON m.id_programma = v2.id_voce LEFT JOIN voce v3 ON m.id_vettore = v3.id_voce LEFT JOIN voce v4 ON m.id_veicolo = v4.id_voce LEFT JOIN evento e ON m.id_lancio = e.id_voce WHERE m.id_voce = ?";
+        $query_dettagli = "SELECT m.*, v1.nome AS nome_azienda, v2.nome AS nome_programma, v3.nome AS nome_vettore, v4.nome AS nome_veicolo, e.data AS data_lancio, e.ora AS ora_lancio, e.luogo AS luogo_lancio, e.pianeta AS pianeta_lancio 
+        FROM missione m LEFT JOIN voce v1 ON m.id_azienda = v1.id_voce LEFT JOIN voce v2 ON m.id_programma = v2.id_voce LEFT JOIN voce v3 ON m.id_vettore = v3.id_voce LEFT JOIN voce v4 ON m.id_veicolo = v4.id_voce LEFT JOIN evento e ON m.id_lancio = e.id_voce 
+        WHERE m.id_voce = ?";
         break;
     case 'astronauta':
         $query_dettagli = "SELECT * FROM astronauta WHERE id_voce = ?";
         break;
     case 'programma':
         // Join con voce per vedere il nome dell'azienda responsabile
-        $query_dettagli = "SELECT p.*, v.nome AS nome_azienda FROM programma p LEFT JOIN voce v ON p.id_azienda = v.id_voce WHERE p.id_voce = ?";
+        $query_dettagli = "SELECT p.*, v.nome AS nome_azienda FROM programma p LEFT JOIN voce v ON p.id_voce = v.id_voce WHERE p.id_voce = ?";
         break;
     default:
         // Gestisce azienda, vettore, veicolo in modo generico
@@ -109,6 +111,8 @@ function generaSelect($nome_campo, $valore_attuale, $lista)
     <title><?= htmlspecialchars($voce['nome_voce']) ?> — Dossier</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"
+        href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <link rel="stylesheet" href="assets/styles/style.css">
     <link rel="stylesheet" href="assets/styles/nav_style.css">
     <link rel="stylesheet" href="assets/styles/voceStyle.css">

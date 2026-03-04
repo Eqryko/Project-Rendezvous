@@ -10,7 +10,7 @@ $stmt_u->execute([$user_id]);
 $user_db = $stmt_u->fetch(PDO::FETCH_ASSOC);
 
 if (!$user_db) {
-    session_destroy();
+    session_destroy(); // distrugge sessione se utente non trovato (inconsistenza dati)
     header("Location: auth/login.php");
     exit();
 }
@@ -115,13 +115,15 @@ $voci_utente = $stmt_voci->fetchAll(PDO::FETCH_ASSOC);
     <script src="assets/scripts/scroll.js" defer></script>
 </head>
 <body>
-
     <header class="Nav">
         <a href="index.php" class="toggle-link">Home</a>
         <a href="ricerca.php" class="toggle-link">Archive</a>
         <?php if ($_SESSION['ruolo'] === 'ADMIN'): ?>
             <a href="admin.php" class="toggle-link" style="color:var(--accent)">Control Unit</a>
         <?php endif; ?>
+        <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentation </a>
+        <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
     <div class="profile-grid">

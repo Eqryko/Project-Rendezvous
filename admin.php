@@ -1,7 +1,7 @@
 <?php
 // admin.php
 session_start();
-require "src/components/config.php"; 
+require "src/components/config.php";
 
 // controllo accesso: se non loggato, reindirizza a login.php
 if (!isset($_SESSION['user_id'])) {
@@ -17,7 +17,7 @@ $userLoggato = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // se ruolo non è ADMIN o UTENTE, reindirizza a index.php
 if (!$userLoggato || ($userLoggato['ruolo'] !== 'ADMIN' && $userLoggato['ruolo'] !== 'UTENTE')) {
-    header("Location: index.php"); 
+    header("Location: index.php");
     exit();
 }
 
@@ -52,11 +52,12 @@ if ($isAdmin) {
 <html lang="it">
 <head>
     <title>Control Unit — Rendezvous</title>
-    <<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
+    <link rel="icon"
+        href="https://scaling.spaggiari.eu/VIIT0005/favicon/75.png&amp;rs=%2FtccTw2MgxYfdxRYmYOB6AaWDwig7Mjl0zrQBslusFLrgln8v1dFB63p5qTp4dENr3DeAajXnV%2F15HyhNhRR%2FG8iNdqZaJxyUtaPePHkjhBWQioJKGUGZCYSU7n9vRa%2FmjC9hNCI%2BhCFdoBQkMOnT4UzIQUf8IQ%2B8Qm0waioy5M%3D">
     <meta name="author" content="Refosco Enrico, Munaro Alex">
-    
+
     <link rel="stylesheet" href="assets/styles/style.css">
     <link rel="stylesheet" href="assets/styles/nav_style.css">
     <link rel="stylesheet" href="assets/styles/adminStyle.css">
@@ -68,7 +69,8 @@ if ($isAdmin) {
         <a href="index.php" class="toggle-link">Home</a>
         <a href="profilo.php" class="toggle-link" target="_blank">Profile</a>
         <a href="https://www.itisrossi.edu.it/" target="_blank">ITIS Rossi</a>
-        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing" target="_blank"> Documentazione </a>
+        <a href="https://docs.google.com/document/d/1Jcs8CQ-wG9qLcFgkkqrC7aUbv7rLe4OOsSBoiXvcVh4/edit?usp=sharing"
+            target="_blank"> Documentazione </a>
         <a href="https://github.com/Eqryko/Project-Rendezvous" target="_blank"> Repository </a>
     </header>
 
