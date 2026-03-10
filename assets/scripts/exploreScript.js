@@ -13,18 +13,14 @@ function caricaDati() { // Funzione per caricare i dati in base alla ricerca
     const query = document.getElementById('cercaNome').value;
     const tabella = document.getElementById('corpoTabella');
 
-    // FETCH: metodo moderno per fare richieste HTTP, più semplice e leggibile di XMLHttpRequest
-
     // Chiamata AJAX a ricerca.php con parametro ajax=1
-    fetch(`ricerca.php?ajax=1&nome=${encodeURIComponent(query)}`) // encodeURIComponent per gestire spazi e caratteri speciali nel nome
-
-    // fetch restituisce una promessa, quindi usiamo .then() per gestire la risposta
-        .then(response => response.text()) // convertiamo la risposta in testo (HTML della tabella)
+    fetch(`ricerca.php?ajax=1&nome=${encodeURIComponent(query)}`) // codifica URI
+        .then(response => response.text()) // risposta in formato testo (HTML della tabella)
         .then(data => {
             // una volta ricevuti i dati, aggiorna la tabella
             tabella.innerHTML = data;
 
-            // stili
+            // stilizza righe
             document.querySelectorAll('.result-row').forEach(r => {
                 r.style.opacity = "0";
                 r.style.transform = "translateY(10px)";
