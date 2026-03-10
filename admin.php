@@ -1,9 +1,10 @@
 <?php
 // admin.php
+// versione stabile
+
 session_start();
 require "src/components/config.php";
 
-// controllo accesso: se non loggato, reindirizza a login.php
 if (!isset($_SESSION['user_id'])) {
     header("Location: auth/login.php");
     exit();
@@ -15,9 +16,9 @@ $stmt = $conn->prepare("SELECT ruolo FROM utente WHERE id_utente = ?");
 $stmt->execute([$userId]);
 $userLoggato = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// se ruolo non è ADMIN o UTENTE, reindirizza a index.php
+// se ruolo non è ADMIN o UTENTE, reindirizza
 if (!$userLoggato || ($userLoggato['ruolo'] !== 'ADMIN' && $userLoggato['ruolo'] !== 'UTENTE')) {
-    header("Location: index.php");
+    header("Location: index.php"); // home
     exit();
 }
 
@@ -31,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambia_ruolo'])) {
         $nuovo_ruolo = $_POST['nuovo_ruolo'];
         if ($id_target != $userId) {
             $updateStmt = $conn->prepare("UPDATE utente SET ruolo = ? WHERE id_utente = ?");
-            $updateStmt->execute([$nuovo_ruolo, $id_target]);
+            $updateStmt->execute([$nuovo_ruolo, $id_target]); // PDO
             $msg = "ACCESS_GRANTED: Ruolo aggiornato.";
         }
     }

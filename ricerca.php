@@ -3,7 +3,7 @@
 session_start();
 require "src/components/config.php";
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = new mysqli($host, $user, $pass, $db); // anche se usiamo PDO, serve per la connessione mysqli in questa pagina specifica (per la gestione AJAX)
 
 if ($conn->connect_error) {
     die("Connessione fallita.");
@@ -12,55 +12,58 @@ if ($conn->connect_error) {
 // --- LOGICA AJAX ---
 if (isset($_GET['ajax'])) {
     $input = isset($_GET['nome']) ? trim($_GET['nome']) : ''; // recupera input di ricerca, rimuove spazi superflui
+    // se non è settato diventa stringa vuota
 
     if (empty($input)) {
         $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA'"; // prende solo voci approvate se input è vuoto
-        $stmt = $conn->prepare($sql);
+        $stmt = $conn->prepare($sql); // senza filtri
     } else {
         // se sto cercando
         $input_upper = strtoupper($input);
         $tipi_validi = ['ASTRONAUTA', 'AZIENDA', 'MISSIONE', 'PROGRAMMA', 'VETTORE', 'VEICOLO'];
         $termini = [];
 
-        // Cerca ogni tipo valido dentro la stringa
+        // Cerca ogni tipo valido dentro la stringa, 
+        // se l'utente ha scritto "cercatore astronauta" o "missione apollo vettore" riesco a identificare i termini chiave e usarli per filtrare la ricerca
         foreach ($tipi_validi as $tipo) {
-            if (strpos($input_upper, $tipo) !== false) {
+            if (strpos($input_upper, $tipo) !== false) {    // strpos restituisce posizione o false se non trovato, quindi controllo !== false per verificare presenza
                 $termini[] = $tipo;
                 $input_upper = str_replace($tipo, '', $input_upper);
             }
         }
 
-        // Aggiunge eventuali altre parole residue
+        // Aggiunge eventuali altre parole residue, che potrebbero essere parte del nome o di altri campi, alla lista dei termini da cercare
+        // ad esempio se l'utente scrive "apollo 11 missione", dopo aver rimosso "MISSIONE" rimane "apollo 11", che è un termine utile da cercare nel nome o in altri campi
         $extra = trim($input_upper);
         if (!empty($extra)) {
             $termini = array_merge($termini, explode(" ", $extra));
         }
 
-        $termini = array_filter($termini);
+        $termini = array_filter($termini); // rimuove eventuali stringhe vuote dalla lista dei termini
 
         $sql = "SELECT * FROM voce WHERE stato = 'APPROVATA' AND (";
         $condizioni = [];
         $params = [];
         $types = "";
 
-        foreach ($termini as $termine) {
-            $condizioni[] = "(nome LIKE ? OR tipo LIKE ?)";
+        foreach ($termini as $termine) { // per ogni termine costruisce una condizione di ricerca, cercando sia nel nome che nel tipo, usando LIKE per permettere ricerche parziali
+            $condizioni[] = "(nome LIKE ? OR tipo LIKE ?)"; // cerco sia in nome che in tipo, usando LIKE per permettere ricerche parziali
             $cerca = "%$termine%";
             $params[] = $cerca;
             $params[] = $cerca;
             $types .= "ss";
         }
-        $sql .= implode(" OR ", $condizioni) . ")";
+        $sql .= implode(" OR ", $condizioni) . ")"; // unisce tutte le condizioni con OR, quindi se l'utente scrive "apollo missione", cerca voci che contengono "apollo" o "missione" in nome o tipo
         $stmt = $conn->prepare($sql);
         if ($types) {
-            $stmt->bind_param($types, ...$params); // bind dinamico dei parametri alla query
+            $stmt->bind_param($types, ...$params); // serve per legare dinamicamente i parametri alla query, evitando SQL injection e gestendo correttamente i tipi di dato
         }
     }
 
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
+    if ($result->num_rows > 0) { // se ci sono risultati, li mostra in tabella
         while ($row = $result->fetch_assoc()) {
             $id = $row['id_voce'];
             $nome = htmlspecialchars($row['nome']);

@@ -1,6 +1,6 @@
 // Funzione per animare le righe che appaiono
 function animateRows() {
-    const rows = document.querySelectorAll('.result-row');
+    const rows = document.querySelectorAll('.result-row'); // Seleziona tutte le righe dei risultati
     rows.forEach((row, i) => {
         setTimeout(() => {
             row.style.opacity = "1";
@@ -9,18 +9,22 @@ function animateRows() {
     });
 }
 
-function caricaDati() {
+function caricaDati() { // Funzione per caricare i dati in base alla ricerca
     const query = document.getElementById('cercaNome').value;
     const tabella = document.getElementById('corpoTabella');
 
-    // Mostra un indicatore di caricamento
-    fetch(`ricerca.php?ajax=1&nome=${encodeURIComponent(query)}`) // Chiamata AJAX a ricerca.php con parametro ajax=1
-    // richiesta GET a ricerca.php, passando il nome come parametro (per default)
-        .then(response => response.text())
+    // FETCH: metodo moderno per fare richieste HTTP, più semplice e leggibile di XMLHttpRequest
+
+    // Chiamata AJAX a ricerca.php con parametro ajax=1
+    fetch(`ricerca.php?ajax=1&nome=${encodeURIComponent(query)}`) // encodeURIComponent per gestire spazi e caratteri speciali nel nome
+
+    // fetch restituisce una promessa, quindi usiamo .then() per gestire la risposta
+        .then(response => response.text()) // convertiamo la risposta in testo (HTML della tabella)
         .then(data => {
             // una volta ricevuti i dati, aggiorna la tabella
             tabella.innerHTML = data;
-            // Reset stile per animazione entry
+
+            // stili
             document.querySelectorAll('.result-row').forEach(r => {
                 r.style.opacity = "0";
                 r.style.transform = "translateY(10px)";
@@ -28,8 +32,8 @@ function caricaDati() {
             });
             animateRows();
         });
+        // Non è necessario gestire errori in questo caso
         // ritorna una promessa per permettere l'uso di .then() in explore.html
-        // Richiesto in sede d'esame
 }
 
 // Intersection Observer per i titoli iniziali

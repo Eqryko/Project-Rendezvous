@@ -1,11 +1,13 @@
 <?php
 // crea_voce.php
+// versione stabile
+
 session_start();
 require "src/components/config.php";
 
-// Protezione: solo utenti loggati
+// solo utenti loggati
 if (!isset($_SESSION['user_id'])) {
-    header("Location: auth/login.php"); // O un redirect alla home
+    header("Location: auth/login.php");
     exit("Accesso negato.");
 }
 
@@ -15,28 +17,35 @@ $programmi = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'programm
 $vettori = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'vettore'")->fetchAll(PDO::FETCH_ASSOC);
 $veicoli = $conn->query("SELECT id_voce, nome FROM voce WHERE tipo = 'veicolo'")->fetchAll(PDO::FETCH_ASSOC);
 
-// Funzione di utilità per convertire stringhe vuote in NULL
+// fetchAll(PDO::FETCH_ASSOC) restituisce un array di tutte le righe del risultato della query, 
+// dove ogni riga è rappresentata come un array associativo (con i nomi delle colonne come chiavi). 
+// In questo modo, possiamo facilmente accedere ai dati di ogni azienda usando $az['id_voce'] e $az['nome'] 
+// all'interno del ciclo foreach che genera le opzioni del menu a tendina.
+
+// convertire stringhe vuote in NULL
 function emptyToNull($value)
 {
     return (trim($value) === '') ? null : $value;
 }
 
 // Gestione del form
-// --- Inizio logica POST ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
     $tipo = $_POST['tipo'];
     $id_creatore = $_SESSION['user_id'];
-    $immagine_url = !empty($_POST['immagine_url']) ? $_POST['immagine_url'] : null;
+    $immagine_url = !empty($_POST['immagine_url']) ? $_POST['immagine_url'] : null; // URL immagine opzionale, se vuoto sarà null
 
     // --- LOGICA DI STATO ---
     $is_admin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN'); // Solo gli admin possono approvare direttamente
-    $stato = $is_admin ? 'APPROVATA' : 'IN_ATTESA';
+    $stato = $is_admin ? 'APPROVATA' : 'IN_ATTESA'; // Se è admin, la voce è approvata direttamente, altrimenti è in attesa di approvazione
     $approvatore = $is_admin ? $id_creatore : null; // Se è admin, lui stesso è l'approvatore
     $data_approvazione = $is_admin ? date('Y-m-d H:i:s') : null;// Se è admin, la data di approvazione è ora, altrimenti null
 
     try {
         $conn->beginTransaction(); // connessione in modalità transazione per garantire integrità dei dati
+
+        // beginTransaction() apre una transazione, tutte le operazioni successive saranno parte di questa transazione finché non viene committata o rollbackata
+        // Se qualcosa va storto, possiamo fare rollback per annullare tutte le operazioni fatte finora, evitando di lasciare dati parziali o incoerenti nel database
 
         // Inseriamo anche approvatore e data_approvazione se è admin
         $stmt = $conn->prepare("INSERT INTO voce (nome, tipo, creatore, stato, immagine_url, approvatore, data_approvazione) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -92,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } catch (Exception $e) {
         // In caso di errore, rollback e mostra messaggio
         if ($conn->inTransaction())
-            $conn->rollBack();
+            $conn->rollBack(); // annulliamo tutte le operazioni fatte finora, evitando di lasciare dati parziali o incoerenti nel database
         $errore_creazione = $e->getMessage();
     }
 }

@@ -3,39 +3,40 @@
 session_start();
 require "../src/components/config.php";
 
-// Imposto timezone per coerenza con database
+// timezone per coerenza con db
 date_default_timezone_set("Europe/Rome");
 
-// Se utente già loggato, reindirizzo a profilo
-if (isset($_SESSION["user_id"])) {
+
+if (isset($_SESSION["user_id"])) {                  // se utente già loggato
     header("Location: ../profilo.php");
     exit();
 }
-// Variabili per messaggi di feedback
+
+// msg feedback
 $errore = "";
 $successo = "";
 
 // Determino tab attivo (login o register)
-$tab = $_GET["tab"] ?? "login";
+$tab = $_GET["tab"] ?? "login"; // ?? serve per dare un valore di default (login) se "tab" non è presente nell'URL
 if (!in_array($tab, ["login", "register"], true))
     $tab = "login";
 
 // Gestione form submission
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") { // (sia login che register)
     $action = $_POST["action"] ?? "";
 
-    // REGISTRAZIONE UTENTE
     // --- REGISTRAZIONE UTENTE ---
-    if ($action === "register") {
+    if ($action === "register") { // registrazione
+
         // 1. RECUPERO I DATI DAL POST (Fondamentale, altrimenti le variabili restano nulle!)
-        $username = trim($_POST["username"] ?? "");
+        $username = trim($_POST["username"] ?? ""); // trim() rimuove spazi bianchi inutili, ?? serve per evitare errori se il campo non è presente
         $nome = trim($_POST["nome"] ?? "");
         $cognome = trim($_POST["cognome"] ?? "");
         $email = trim($_POST["email"] ?? "");
-        $password_chiaro = $_POST["password"] ?? ""; // La chiamiamo così per chiarezza
+        $password_chiaro = $_POST["password"] ?? ""; // per chiarezza
 
         // 2. VALIDAZIONI DI BASE
-        if ($username === "" || $email === "" || $password_chiaro === "") {
+        if ($username === "" || $email === "" || $password_chiaro === "") { // entra se uno è vuoto
             $errore = "STATUS_ERROR: Campi incompleti.";
             $tab = "register";
         } elseif (strlen($password_chiaro) < 5) {
@@ -44,14 +45,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             // 3. CONTROLLO UNICITÀ
             $stmt = $conn->prepare("SELECT id_utente FROM utente WHERE username = ? OR email = ?");
-            $stmt->execute([$username, $email]);
+            $stmt->execute([$username, $email]); // grazie a PDO, questi valori vengono automaticamente "sanificati" per prevenire SQL injection
 
             if ($stmt->fetch()) {
                 $errore = "STATUS_ERROR: Credenziali già esistenti.";
                 $tab = "register";
             } else {
-                // 4. CRITTOGRAFIA (Creiamo l'hash della password)
-                $hashed_password = password_hash($password_chiaro, PASSWORD_DEFAULT);
+                // 4. CRITTOGRAFIA (hash della password)
+                $hashed_password = password_hash($password_chiaro, PASSWORD_DEFAULT); // bycrypt/argon2
 
                 // 5. INSERIMENTO NEL DATABASE
                 $stmt = $conn->prepare("INSERT INTO utente (username, nome, cognome, email, password_hash, ruolo, data_registrazione, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -66,8 +67,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         }
     }
+
     // --- LOGIN UTENTE ---
-    if ($action === "login") {
+    if ($action === "login") { // login
         $userOrEmail = trim($_POST["userOrEmail"] ?? "");
         $password_input = $_POST["password"] ?? "";
 
@@ -75,9 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->execute([$userOrEmail, $userOrEmail]);
         $user = $stmt->fetch();
 
-        // Verifichiamo se l'utente esiste E se la password corrisponde all'hash
-        if ($user && password_verify($password_input, $user["password_hash"])) {
-            // ... Logica di salvataggio sessione ...
+        // se l'utente esiste E se la password corrisponde all'hash
+        if ($user && password_verify($password_input, $user["password_hash"])) {  // match hash
+            // allora salva
             $_SESSION["user_id"] = $user["id_utente"];
             header("Location: ../profilo.php");
             exit();

@@ -1,5 +1,7 @@
 <?php
 // voce.php
+// versione stabile
+
 session_start();
 require "src/components/config.php";
 
@@ -9,7 +11,7 @@ if (!$id) {
     exit();
 }
 
-// 1. RECUPERO DATI BASE (Incluso il fallback per evitare warning sulle chiavi sessione)
+// 1. RECUPERO DATI BASE
 $query = "SELECT v.nome AS nome_voce, v.tipo, v.stato, v.id_originale,
                  v.data_creazione, v.data_approvazione, 
                  u.username AS creatore_name, 
@@ -30,7 +32,7 @@ if (!$voce)
 $tipo = $voce['tipo'];
 $edit_mode = isset($_POST['enable_edit']);
 
-// Controllo privilegi (usando i nomi di sessione che abbiamo sistemato nel login)
+// Controllo privilegi
 $is_admin = (isset($_SESSION['ruolo']) && $_SESSION['ruolo'] === 'ADMIN');
 $is_logged = isset($_SESSION['user_id']);
 
@@ -88,11 +90,12 @@ switch ($tipo) {
         break;
 }
 
+// finalmente esegue la query dei dettagli specifici
 $stmt_det = $conn->prepare($query_dettagli);
 $stmt_det->execute([$id]);
 $dettagli = $stmt_det->fetch(PDO::FETCH_ASSOC);
 
-// Helper per i select (mantenuto)
+// Helper per i select
 function generaSelect($nome_campo, $valore_attuale, $lista)
 {
     echo "<select name='$nome_campo' class='cyber-input'>";

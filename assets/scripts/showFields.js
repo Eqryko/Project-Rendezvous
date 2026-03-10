@@ -6,3 +6,5 @@ function mostraCampi() {
         if (target) target.style.display = 'block';
     }
 }
+
+// nella pagina crea_voce.php

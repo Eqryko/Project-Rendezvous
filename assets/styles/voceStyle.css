@@ -145,7 +145,7 @@ body {
     transform: translateX(3px); /* Piccolo feedback al passaggio */
 }
 
-/* Iconcina per indicare il link esterno/correlato (opzionale) */
+/* Iconcina per indicare il link esterno/correlato */
 .wiki-link::after {
     content: ' ↗';
     font-size: 0.7rem;

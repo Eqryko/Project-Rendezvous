@@ -1,9 +1,12 @@
 <?php
 // profilo.php
+// versione stabile
+
 session_start();
 
 require "src/components/config.php";
-// --- Recupero dati freschi dal Database ---
+
+// recupero dati freschi dal db
 $user_id = $_SESSION["user_id"];
 $stmt_u = $conn->prepare("SELECT * FROM utente WHERE id_utente = ?");
 $stmt_u->execute([$user_id]);
@@ -15,7 +18,7 @@ if (!$user_db) {
     exit();
 }
 
-// Aggiorniamo la sessione per sicurezza, dava warnings
+// Aggiorniamo la sessione per sicurezza
 $_SESSION["username"] = $user_db["username"];
 $_SESSION["nome"] = $user_db["nome"];
 $_SESSION["cognome"] = $user_db["cognome"];
@@ -38,10 +41,10 @@ if (isset($_POST['logout'])) {
     exit();
 }
 
-// Salvataggio modifiche
+// Salvataggio modifiche (modifica profilo)
 if (isset($_POST['save_profile'])) {
     $user_id = $_SESSION["user_id"];
-    $nuovo_username = trim($_POST['username']);
+    $nuovo_username = trim($_POST['username']); // rimuove spazi superflui
     $nuovo_nome = trim($_POST['nome']);
     $nuovo_cognome = trim($_POST['cognome']);
     $nuova_email = trim($_POST['email']);
@@ -57,20 +60,22 @@ if (isset($_POST['save_profile'])) {
     } else {
         try {
             $stmt_check = $conn->prepare("SELECT id_utente FROM utente WHERE username = ? AND id_utente != ?");
-            $stmt_check->execute([$nuovo_username, $user_id]);
+            $stmt_check->execute([$nuovo_username, $user_id]); // controlla se esiste un altro utente con lo stesso username (escluso l'utente attuale)
 
-            if ($stmt_check->fetch()) {
+            if ($stmt_check->fetch()) { // se trova un risultato, significa che lo username è già in uso da un altro utente
                 $errore = "ERRORE: Username già in uso.";
                 $edit_mode = true;
             } else {
+                // Se la password non è vuota, la aggiorna (dopo averla hashata), altrimenti lascia quella attuale
+                
                 if (!empty($nuova_pass)) {
                     // CRITTOGRAFIA: Hash della nuova password
-                    $hashed_pass = password_hash($nuova_pass, PASSWORD_DEFAULT); // crittografia password con algoritmo di default (php)
+                    $hashed_pass = password_hash($nuova_pass, PASSWORD_DEFAULT); // con algoritmo di default (php)
 
                     $sql = "UPDATE utente SET username = ?, nome = ?, cognome = ?, email = ?, password_hash = ? WHERE id_utente = ?";
                     $params = [$nuovo_username, $nuovo_nome, $nuovo_cognome, $nuova_email, $hashed_pass, $user_id];
                 } else {
-                    // Se la password è vuota, non aggiorniamo quel campo
+                    // Se la password è vuota, non aggiorna quel campo
                     $sql = "UPDATE utente SET username = ?, nome = ?, cognome = ?, email = ? WHERE id_utente = ?";
                     $params = [$nuovo_username, $nuovo_nome, $nuovo_cognome, $nuova_email, $user_id];
                 }
@@ -86,7 +91,7 @@ if (isset($_POST['save_profile'])) {
                 $messaggio = "SUCCESS: Profilo sincronizzato.";
                 $edit_mode = false;
             }
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { // gestione errori con PDO
             $errore = "SYSTEM_FAIL: " . $e->getMessage();
         }
     }

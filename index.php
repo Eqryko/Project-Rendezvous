@@ -1,5 +1,7 @@
 <?php
 // index.php
+// versione stabile
+
     session_start();
 ?>
 
